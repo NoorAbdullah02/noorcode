@@ -12,16 +12,13 @@
 <br />
 
 <p>
-  <a href="https://cwa.run/bun?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_bun"><img src="https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white" alt="Bun" /></a>&nbsp;
-  <a href="https://cwa.run/opentui?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_opentui"><img src="https://img.shields.io/badge/OpenTUI-111111?style=for-the-badge" alt="OpenTUI" /></a>&nbsp;
-  <a href="https://cwa.run/react?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_react"><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" /></a>&nbsp;
-  <a href="https://cwa.run/hono?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_hono"><img src="https://img.shields.io/badge/Hono-E36002?style=for-the-badge&logo=hono&logoColor=white" alt="Hono" /></a>&nbsp;
-  <a href="https://cwa.run/neon?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_neon"><img src="https://img.shields.io/badge/Neon-00E599?style=for-the-badge&logo=neon&logoColor=black" alt="Neon" /></a>&nbsp;
-  <a href="https://cwa.run/clerk?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_clerk"><img src="https://img.shields.io/badge/Clerk-6C47FF?style=for-the-badge&logo=clerk&logoColor=white" alt="Clerk" /></a>&nbsp;
-  <a href="https://cwa.run/polar?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_polar"><img src="https://img.shields.io/badge/Polar-000000?style=for-the-badge&logo=polar&logoColor=white" alt="Polar" /></a>&nbsp;
-  <a href="https://cwa.run/coderabbit?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_coderabbit"><img src="https://img.shields.io/badge/CodeRabbit-FF6C37?style=for-the-badge&logo=rabbitmq&logoColor=white" alt="CodeRabbit" /></a>&nbsp;
-  <a href="https://cwa.run/sentry?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_sentry"><img src="https://img.shields.io/badge/Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white" alt="Sentry" /></a>&nbsp;
-  <a href="https://cwa.run/railway?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=badge_railway"><img src="https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white" alt="Railway" /></a>
+  <a href="https://bun.sh"><img src="https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white" alt="Bun" /></a>&nbsp;
+  <a href="https://opentui.dev"><img src="https://img.shields.io/badge/OpenTUI-111111?style=for-the-badge" alt="OpenTUI" /></a>&nbsp;
+  <a href="https://react.dev"><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" /></a>&nbsp;
+  <a href="https://hono.dev"><img src="https://img.shields.io/badge/Hono-E36002?style=for-the-badge&logo=hono&logoColor=white" alt="Hono" /></a>&nbsp;
+  <a href="https://neon.tech"><img src="https://img.shields.io/badge/Neon-00E599?style=for-the-badge&logo=neon&logoColor=black" alt="Neon" /></a>&nbsp;
+  <a href="https://clerk.com"><img src="https://img.shields.io/badge/Clerk-6C47FF?style=for-the-badge&logo=clerk&logoColor=white" alt="Clerk" /></a>&nbsp;
+  <a href="https://polar.sh"><img src="https://img.shields.io/badge/Polar-000000?style=for-the-badge&logo=polar&logoColor=white" alt="Polar" /></a>
 </p>
 
 </div>
@@ -36,31 +33,6 @@ The agent operates in two modes:
 
 - **PLAN** — Read-only exploration. The AI can read files, list directories, glob, and grep, but cannot make any changes. Use this to analyse a codebase and draft a plan before touching anything.
 - **BUILD** — Full implementation. In addition to all PLAN tools, the AI can write files, edit files, and execute shell commands inside the current project directory.
-
----
-
-## Tutorial
-
-Each chapter has a matching branch so you can check out the code at any point in the tutorial:
-
-| Branch | Chapter |
-|--------|---------|
-| `main` | Final project |
-| `01-project-setup-component-architecture` | Project setup and component architecture |
-| `02-ui-infrastructure` | Terminal UI infrastructure |
-| `03-routing-screen-layout` | Routing and screen layout |
-| `04-server-shared-database` | Server, shared package, and database |
-| `05-ai-chat-streamiing` | AI chat streaming |
-| `06-session-management-config` | Session management and configuration |
-| `07-tool-calling` | Tool calling |
-| `08-user-experience` | User experience polish |
-| `09-billing` | Billing and credit metering |
-| `10-client-side-tool-execution` | Client-side tool execution |
-| `11-the-end` | Final tutorial state |
-
-```bash
-git checkout 07-tool-calling  # example: jump to tool calling
-```
 
 ---
 
@@ -136,11 +108,11 @@ Includes all PLAN tools, plus:
 
 ### Prerequisites
 
-- [Bun](https://cwa.run/bun?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=prerequisites_bun) installed
-- PostgreSQL database, such as [Neon](https://cwa.run/neon?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=prerequisites_neon)
-- [Clerk](https://cwa.run/clerk?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=prerequisites_clerk) application configured for OAuth
-- An Anthropic and/or OpenAI API key
-- [Polar](https://cwa.run/polar?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=prerequisites_polar) account and credits meter
+- [Bun](https://bun.sh) installed
+- PostgreSQL database, such as [Neon](https://neon.tech)
+- [Clerk](https://clerk.com) application configured for OAuth
+- An Anthropic API key (and optionally other provider keys)
+- [Polar](https://polar.sh) account and credits meter
 
 ### 1. Clone and install
 
@@ -190,7 +162,7 @@ POLAR_CREDITS_METER_ID=
 
 NoorCode authenticates the CLI through a browser-based Clerk OAuth 2.0 + PKCE flow. The CLI opens Clerk's authorization URL in the browser, Clerk redirects to the server at `/auth/callback`, and the server forwards the authorization code back to a local callback server running inside the CLI.
 
-In your [Clerk dashboard](https://cwa.run/clerk?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=setup_clerk):
+In your [Clerk dashboard](https://clerk.com):
 
 1. Go to **Configure → Developers → OAuth applications**.
 2. Click **Add OAuth application**.
@@ -200,8 +172,6 @@ In your [Clerk dashboard](https://cwa.run/clerk?utm_source=github&utm_medium=rea
 6. Turn on **Consent screen** so users can approve the requested scopes.
 7. Add `http://localhost:3000/auth/callback` as a redirect URI for local development.
 8. Add your deployed callback URL as another redirect URI for production (e.g. `https://your-deployment.com/auth/callback`).
-
-You can keep both local and production redirect URIs on the same OAuth application.
 
 Copy the generated credentials into `.env`:
 
@@ -217,7 +187,7 @@ Copy the generated credentials into `.env`:
 
 NoorCode uses Polar credits to gate new work and bill completed AI usage. The server checks the user's active meter balance before creating sessions or sending chat requests, then ingests usage events after AI responses finish.
 
-In your [Polar dashboard](https://cwa.run/polar?utm_source=github&utm_medium=readme&utm_campaign=noorcode&utm_content=setup_polar), use **sandbox mode** for local development.
+In your [Polar dashboard](https://polar.sh), use **sandbox mode** for local development.
 
 **Step 1 — Create the meter:**
 
@@ -269,13 +239,13 @@ bun run --cwd packages/database db:generate
 Push the Prisma schema to your Postgres database:
 
 ```bash
-bun run --cwd packages/database db:push
+cd packages/database && bunx prisma db push
 ```
 
-Or use Prisma Migrate for a tracked migration:
+Or use Prisma Migrate for a tracked migration history:
 
 ```bash
-bun run --cwd packages/database db:migrate
+cd packages/database && bunx prisma migrate dev
 ```
 
 ### 6. Run the server
