@@ -429,4 +429,4 @@ Run `bun run build:cli` — the WASM files are bundled into `packages/cli/dist/`
 
 ## License
 
-MIT © NoorCode contributors
+MIT © NoorCode.org contributors
