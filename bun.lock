@@ -6,6 +6,7 @@
       "name": "nightcode",
       "dependencies": {
         "dotenv": "^17.4.2",
+        "open": "^11.0.0",
       },
     },
     "packages/cli": {

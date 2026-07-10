@@ -84,7 +84,9 @@ const app = new Hono<AuthenticatedEnv>()
       const tools = getToolContracts(mode);
       const resolvedModel = resolveChatModel(model);
       const previousMessages = Array.isArray(session.messages)
-        ? (session.messages as unknown as NoorcodeUIMessage[])
+        ? (session.messages as unknown as NoorcodeUIMessage[]).filter(
+            (m) => m && Array.isArray(m.parts) && m.parts.length > 0
+          )
         : [];
       const mergedMessages = [...previousMessages];
       

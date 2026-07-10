@@ -64,7 +64,7 @@ function resolveAnthropicModel(modelId: AnthropicModelId): ResolvedModel {
 
 function resolveBynaraModel(modelId: BynaraModelId): ResolvedModel {
   return {
-    model: bynara(modelId),
+    model: bynara.chat(modelId),
     provider: "bynara",
     modelId,
   };
@@ -72,7 +72,7 @@ function resolveBynaraModel(modelId: BynaraModelId): ResolvedModel {
 
 function resolveOpenCodeModel(modelId: OpenCodeModelId): ResolvedModel {
   return {
-    model: opencode(modelId),
+    model: opencode.chat(modelId),
     provider: "opencode",
     modelId,
   };

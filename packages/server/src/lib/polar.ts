@@ -123,7 +123,7 @@ export async function ingestAiUsage({
   await polar.events.ingest({
     events: [
       {
-        name: "noorcode_usage",
+        name: "noorcode_usages",
         externalId: eventId,
         externalCustomerId,
         metadata: { credits },
