@@ -1,14 +1,21 @@
 {
   "name": "@noorcode/cli",
+  "version": "1.0.8",
   "module": "src/index.tsx",
   "type": "module",
-  "private": true,
+  "private": false,
+  "files": [
+    "bin",
+    "dist"
+  ],
   "bin": {
-    "noorcode": "./bin/noorcode"
+    "noorcode": "bin/noorcode"
   },
   "scripts": {
     "dev": "bun run --watch src/index.tsx",
-    "build": "bun build src/index.tsx --outdir dist --target bun"
+    "build": "bun build src/index.tsx --outdir dist --target bun",
+    "compile": "bun build src/index.tsx --compile --outfile dist/noorcode",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@noorcode/server": "workspace:*",
@@ -25,7 +32,7 @@
     "@opentui/react": "^0.1.97",
     "ai": "^6.0.184",
     "date-fns": "^4.1.0",
-    "hono": "^4.12.12",
+    "hono": "^4.12.29",
     "open": "^11.0.0",
     "opentui-spinner": "^0.0.6",
     "pretty-ms": "^9.3.0",

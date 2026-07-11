@@ -15,4 +15,4 @@ export async function getErrorMessage(response: ErrorResponse) {
   }
 
   return response.statusText || `Request failed with status ${response.status}`;
-};
+}

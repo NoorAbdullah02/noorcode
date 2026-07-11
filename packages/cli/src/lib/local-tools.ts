@@ -7,6 +7,8 @@ const MAX_RESULTS = 200;
 const MAX_MATCHES = 50;
 const MAX_OUTPUT = 20_000;
 const DEFAULT_TIMEOUT = 30_000;
+const MAX_GREP_SCANNED_FILES = 5_000;
+const GREP_IGNORED_DIRECTORIES = new Set(["node_modules", ".git"]);
 
 function resolveInsideCwd(path: string) {
   const cwd = process.cwd();
@@ -24,6 +26,58 @@ function truncate(value: string, limit: number) {
   return value.length > limit
     ? `${value.slice(0, limit)}\n... (truncated, ${value.length} total chars)`
     : value;
+}
+
+async function collectGrepFiles(resolved: string, include: string | undefined) {
+  const includeGlob = include ? new Bun.Glob(include) : null;
+  const files: string[] = [];
+
+  async function walk(dir: string): Promise<void> {
+    if (files.length >= MAX_GREP_SCANNED_FILES) return;
+
+    let entries;
+    try {
+      entries = await readdir(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+
+    for (const entry of entries) {
+      if (files.length >= MAX_GREP_SCANNED_FILES) return;
+      if (GREP_IGNORED_DIRECTORIES.has(entry.name)) continue;
+
+      const full = join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        await walk(full);
+      } else if (entry.isFile()) {
+        if (includeGlob && !includeGlob.match(entry.name)) continue;
+        files.push(full);
+      }
+    }
+  }
+
+  await walk(resolved);
+  files.sort();
+  return files;
+}
+
+function resolveShellCommand(command: string): string[] {
+  if (process.platform === "win32") {
+    const bash = Bun.which("bash");
+    if (bash) return [bash, "-c", command];
+
+    const shell = Bun.which("pwsh") ?? Bun.which("powershell");
+    if (shell) return [shell, "-NoProfile", "-NonInteractive", "-Command", command];
+
+    throw new Error(
+      "No shell found on PATH. Install Git for Windows (provides bash) or ensure PowerShell is available.",
+    );
+  }
+
+  const shell = Bun.which("bash") ?? Bun.which("sh");
+  if (!shell) throw new Error("No shell (bash or sh) found on PATH.");
+  return [shell, "-c", command];
 }
 
 export async function executeLocalTool(toolName: string, input: unknown, mode: ModeType) {
@@ -79,46 +133,42 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
     case "grep": {
       const { pattern, path, include } = toolInputSchemas.grep.parse(input);
       const { cwd, resolved } = resolveInsideCwd(path);
-      const args = [
-        "-rn",
-        "--color=never",
-        "--exclude-dir=node_modules",
-        "--exclude-dir=.git",
-        "-E",
-      ];
-      if (include) args.push(`--include=${include}`);
-      args.push(pattern, resolved);
 
-      const proc = Bun.spawn(["grep", ...args], { cwd, stdout: "pipe", stderr: "pipe" });
-      const [stdout, stderr] = await Promise.all([
-        new Response(proc.stdout).text(),
-        new Response(proc.stderr).text(),
-      ]);
-      const exitCode = await proc.exited;
+      let regex: RegExp;
+      try {
+        regex = new RegExp(pattern);
+      } catch (err) {
+        throw new Error(`Invalid regex pattern: ${err instanceof Error ? err.message : String(err)}`);
+      }
 
-      if (exitCode !== 0 && exitCode !== 1) throw new Error(`grep failed: ${stderr.trim()}`);
-      if (!stdout.trim()) return { matches: [], message: "No matches found" };
-
-      const lines = stdout.trim().split("\n");
+      const files = await collectGrepFiles(resolved, include);
       const matches: { file: string; line: number; content: string }[] = [];
+      let totalMatches = 0;
       let truncated = false;
 
-      for (const line of lines) {
-        if (matches.length >= MAX_MATCHES) {
-          truncated = true;
-          break;
+      for (const file of files) {
+        let content: string;
+        try {
+          content = await readFile(file, "utf-8");
+        } catch {
+          continue;
         }
-        const match = line.match(/^(.+?):(\d+):(.*)$/);
-        if (match) {
-          matches.push({
-            file: relative(cwd, match[1]!),
-            line: Number(match[2]),
-            content: match[3]!,
-          });
+        if (content.includes("\0")) continue; // skip binary files
+
+        const lines = content.split("\n");
+        for (let i = 0; i < lines.length; i++) {
+          if (!regex.test(lines[i]!)) continue;
+          totalMatches++;
+          if (matches.length < MAX_MATCHES) {
+            matches.push({ file: relative(cwd, file), line: i + 1, content: lines[i]! });
+          } else {
+            truncated = true;
+          }
         }
       }
 
-      return { matches, ...(truncated ? { truncated: true, totalMatches: lines.length } : {}) };
+      if (matches.length === 0) return { matches: [], message: "No matches found" };
+      return { matches, ...(truncated ? { truncated: true, totalMatches } : {}) };
     }
     case "writeFile": {
       const { path, content } = toolInputSchemas.writeFile.parse(input);
@@ -145,7 +195,7 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
     }
     case "bash": {
       const { command, timeout = DEFAULT_TIMEOUT } = toolInputSchemas.bash.parse(input);
-      const proc = Bun.spawn(["bash", "-c", command], {
+      const proc = Bun.spawn(resolveShellCommand(command), {
         cwd: resolveInsideCwd(".").resolved,
         stdout: "pipe",
         stderr: "pipe",
@@ -167,4 +217,4 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
     default:
       throw new Error(`Unknown tool: ${toolName}`);
   }
-};
+}

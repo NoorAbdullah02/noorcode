@@ -35,12 +35,9 @@ function getErrorMessage(error: unknown) {
 }
 
 export async function performLogin() {
-  const clerkFrontendApi = process.env.CLERK_FRONTEND_API;
-  const clientId = process.env.CLERK_OAUTH_CLIENT_ID;
-  const apiUrl = process.env.API_URL ?? "http://localhost:3000";
-
-  if (!clerkFrontendApi) throw new Error("CLERK_FRONTEND_API not set");
-  if (!clientId) throw new Error("CLERK_OAUTH_CLIENT_ID not set");
+  const clerkFrontendApi = process.env.CLERK_FRONTEND_API ?? "https://just-perch-81.clerk.accounts.dev";
+  const clientId = process.env.CLERK_OAUTH_CLIENT_ID ?? "fnenfkBuMh1zHBlm";
+  const apiUrl = process.env.API_URL ?? "https://noorcode.onrender.com";
 
   const nonce = crypto.randomUUID();
   const codeVerifier = toBase64Url(crypto.getRandomValues(new Uint8Array(32)));
@@ -149,7 +146,12 @@ export async function performLogin() {
     authorizeUrl.searchParams.set("code_challenge", codeChallenge);
     authorizeUrl.searchParams.set("code_challenge_method", "S256");
 
-    void open(authorizeUrl.toString());
+    open(authorizeUrl.toString()).catch((err) => {
+      if (!settled) {
+        console.error(`Could not open browser automatically. Open this URL to continue:\n${authorizeUrl.toString()}`);
+        console.error(getErrorMessage(err));
+      }
+    });
 
     setTimeout(() => {
       if (!settled) {

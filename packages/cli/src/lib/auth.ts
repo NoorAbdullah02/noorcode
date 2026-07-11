@@ -18,7 +18,7 @@ export function getAuth(): AuthData | null {
   } catch {
     return null;
   }
-};
+}
 
 export function saveAuth(data: AuthData) {
   if (!existsSync(AUTH_DIR)) {

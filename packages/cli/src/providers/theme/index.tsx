@@ -23,7 +23,7 @@ function getInitialTheme(): Theme {
   } catch {
     return DEFAULT_THEME;
   }
-};
+}
 
 function persistTheme(theme: Theme) {
   try {
@@ -36,7 +36,7 @@ function persistTheme(theme: Theme) {
   } catch {
     // Ignore preference write failures so theme switching still works for this session.
   }
-};
+}
 
 type ThemeContextValue = {
   colors: ThemeColors;
@@ -72,4 +72,4 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       {children}
     </ThemeContext.Provider>
   );
-};
+}

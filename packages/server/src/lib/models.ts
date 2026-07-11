@@ -51,7 +51,7 @@ const opencode = createOpenAI({
 
 function assertUnsupportedProvider(provider: never): never {
   throw new Error(`Unsupported provider: ${provider}`);
-};
+}
 
 function resolveAnthropicModel(modelId: AnthropicModelId): ResolvedModel {
   return {
@@ -60,23 +60,31 @@ function resolveAnthropicModel(modelId: AnthropicModelId): ResolvedModel {
     modelId,
     providerOptions: ANTHROPIC_PROVIDER_OPTIONS[modelId],
   };
-};
+}
 
 function resolveBynaraModel(modelId: BynaraModelId): ResolvedModel {
+  if (!process.env.BYNARA_API_KEY) {
+    throw new Error("BYNARA_API_KEY environment variable is required to use bynara models");
+  }
+
   return {
     model: bynara.chat(modelId),
     provider: "bynara",
     modelId,
   };
-};
+}
 
 function resolveOpenCodeModel(modelId: OpenCodeModelId): ResolvedModel {
+  if (!process.env.OPENCODE_API_KEY) {
+    throw new Error("OPENCODE_API_KEY environment variable is required to use opencode models");
+  }
+
   return {
     model: opencode.chat(modelId),
     provider: "opencode",
     modelId,
   };
-};
+}
 
 function resolveSupportedChatModel(model: SupportedChatModel): ResolvedModel {
   const provider = model.provider;
@@ -91,11 +99,11 @@ function resolveSupportedChatModel(model: SupportedChatModel): ResolvedModel {
     default:
       return assertUnsupportedProvider(provider);
   }
-};
+}
 
 export function isSupportedChatModel(modelId: string): modelId is SupportedChatModelId {
   return findSupportedChatModel(modelId) != null;
-};
+}
 
 export function resolveChatModel(modelId: string): ResolvedModel {
   const model = findSupportedChatModel(modelId);

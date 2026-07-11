@@ -260,6 +260,7 @@ function FileMentionMenu({
 type Props = {
   onSubmit: (text: string) => void;
   disabled?: boolean;
+  history?: string[];
 };
 
 export const TEXTAREA_KEY_BINDINGS: KeyBinding[] = [
@@ -269,12 +270,16 @@ export const TEXTAREA_KEY_BINDINGS: KeyBinding[] = [
   { name: "enter", shift: true, action: "newline" },
 ];
 
-export function InputBar({ onSubmit, disabled = false }: Props) {
+export function InputBar({ onSubmit, disabled = false, history }: Props) {
   const { mode, toggleMode, setMode, setModel } = usePromptConfig();
   const textareaRef = useRef<TextareaRenderable>(null);
   const onSubmitRef = useRef<() => void>(() => {});
   const activeMentionRef = useRef<MentionMatch | null>(null);
   const mentionScrollRef = useRef<ScrollBoxRenderable>(null);
+  const historyRef = useRef<string[]>(history ?? []);
+  const historyIndexRef = useRef<number | null>(null);
+  const historyDraftRef = useRef("");
+  const isHistoryNavRef = useRef(false);
 
   const renderer = useRenderer();
   const navigate = useNavigate();
@@ -340,6 +345,13 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
 
     const text = textarea.plainText;
 
+    if (isHistoryNavRef.current) {
+      isHistoryNavRef.current = false;
+    } else {
+      // A real edit (not our own history recall) detaches from history browsing.
+      historyIndexRef.current = null;
+    }
+
     handleContentChange(textarea.plainText);
     syncMentionMenu(text, textarea.cursorOffset);
   }, [handleContentChange, syncMentionMenu]);
@@ -352,6 +364,12 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
 
     const text = textarea.plainText.trim();
     if (text.length === 0) return;
+
+    if (historyRef.current[historyRef.current.length - 1] !== text) {
+      historyRef.current.push(text);
+    }
+    historyIndexRef.current = null;
+    historyDraftRef.current = "";
 
     onSubmit(text);
     textarea.setText("");
@@ -434,10 +452,13 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
       });
     };
 
-    void loadCandidates();
+    // Debounce so fast typing (and slow/network filesystems) doesn't trigger
+    // a directory walk per keystroke.
+    const timer = setTimeout(() => void loadCandidates(), 100);
 
     return () => {
       ignore = true;
+      clearTimeout(timer);
     };
   }, [activeMention]);
 
@@ -477,6 +498,50 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     if (key.name === "tab") {
       key.preventDefault();
       toggleMode();
+      return;
+    }
+
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    if (key.name === "up") {
+      // Only recall history when the cursor sits on the first line, so
+      // arrowing up through a multi-line draft still moves the cursor normally.
+      if (textarea.plainText.slice(0, textarea.cursorOffset).includes("\n")) return;
+      if (historyRef.current.length === 0) return;
+
+      key.preventDefault();
+
+      if (historyIndexRef.current === null) {
+        historyDraftRef.current = textarea.plainText;
+        historyIndexRef.current = historyRef.current.length - 1;
+      } else if (historyIndexRef.current > 0) {
+        historyIndexRef.current -= 1;
+      }
+
+      const entry = historyRef.current[historyIndexRef.current];
+      if (entry === undefined) return;
+
+      isHistoryNavRef.current = true;
+      textarea.setText(entry);
+      textarea.cursorOffset = entry.length;
+    } else if (key.name === "down") {
+      if (historyIndexRef.current === null) return;
+
+      key.preventDefault();
+
+      let nextText: string;
+      if (historyIndexRef.current < historyRef.current.length - 1) {
+        historyIndexRef.current += 1;
+        nextText = historyRef.current[historyIndexRef.current] ?? "";
+      } else {
+        historyIndexRef.current = null;
+        nextText = historyDraftRef.current;
+      }
+
+      isHistoryNavRef.current = true;
+      textarea.setText(nextText);
+      textarea.cursorOffset = nextText.length;
     }
   });
 

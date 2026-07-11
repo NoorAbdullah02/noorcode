@@ -12,7 +12,7 @@ export async function openUpgradeCheckout() {
   }
 
   throw new Error(await getErrorMessage(response));
-};
+}
 
 export async function openBillingPortal() {
   const response = await apiClient.billing.portal.$post();
@@ -24,4 +24,4 @@ export async function openBillingPortal() {
   }
 
   throw new Error(await getErrorMessage(response));
-};
+}

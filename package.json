@@ -1,12 +1,15 @@
 {
   "name": "noorcode",
   "version": "1.0.0",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev:cli": "bun run --watch packages/cli/src/index.tsx",
     "dev:server": "bun run --hot packages/server/src/index.ts",
     "build:cli": "bun run --filter @noorcode/cli build",
-    "link:cli": "bun run build:cli && cd packages/cli && bun link"
+    "link:cli": "bun run build:cli && cd packages/cli && bun link",
+    "typecheck": "bun run --filter '*' typecheck"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

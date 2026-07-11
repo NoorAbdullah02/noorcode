@@ -28,4 +28,4 @@ export async function authenticateOAuthRequest(request: Request) {
   }
 
   return { userId: auth.userId };
-};
+}

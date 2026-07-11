@@ -72,6 +72,22 @@ function SessionChat({
   );
   const hasSubmittedInitialPromptRef = useRef(false);
 
+  const promptHistory = useMemo(() => {
+    const fromMessages = initialMessages
+      .filter((msg) => msg.role === "user")
+      .map((msg) => msg.parts.filter((p) => p.type === "text").map((p) => p.text).join(""))
+      .filter((text) => text.length > 0);
+
+    // The very first message of a brand-new session is auto-submitted via
+    // the initialPrompt effect below, bypassing the input bar entirely, so
+    // it won't be in initialMessages yet — seed it in manually.
+    if (initialPrompt?.message && !fromMessages.includes(initialPrompt.message)) {
+      return [...fromMessages, initialPrompt.message];
+    }
+
+    return fromMessages;
+  }, [initialMessages, initialPrompt]);
+
   // Stop the pending reply when the user leaves this session.
   useEffect(() => {
     return () => {
@@ -102,6 +118,7 @@ function SessionChat({
       onSubmit={(text) => submit({ userText: text, mode, model })}
       loading={status === "submitted" || status === "streaming"}
       interruptible={status === "submitted" || status === "streaming"}
+      history={promptHistory}
     >
       {messages.map((msg) => (
         <ChatMessage key={msg.id} msg={msg} />

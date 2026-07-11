@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-// import { HTTPException } from "hono/http-exception";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { db } from "@noorcode/database/client";
@@ -36,15 +35,6 @@ const app = new Hono<AuthenticatedEnv>()
     return c.json(sessions);
   })
   .get("/:id", async (c) => {
-    // MOCK: Uncomment to simulate slow session loading
-    // await new Promise((r) => setTimeout(r, 5000))
-
-    // MOCK: Uncomment to simulate session loading error
-    // throw new HTTPException(
-    //   500, 
-    //   { message: "Mock error: session loading failed" }
-    // )
-
     const id = c.req.param("id");
     const userId = c.get("userId");
     
@@ -59,15 +49,6 @@ const app = new Hono<AuthenticatedEnv>()
     return c.json(session);
   })
   .post("/", requireCreditsBalance, createSessionValidator, async (c) => {
-    // MOCK: Uncomment to simulate slow session loading
-    // await new Promise((r) => setTimeout(r, 5000))
-
-    // MOCK: Uncomment to simulate session loading error
-    // throw new HTTPException(
-    //   500, 
-    //   { message: "Mock error: session loading failed" }
-    // )
-
     const userId = c.get("userId");
     const data = c.req.valid("json");
 

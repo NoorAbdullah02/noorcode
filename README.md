@@ -107,8 +107,11 @@ Includes all PLAN tools, plus:
 ## Getting Started
 
 ### Prerequisites
-
-- [Bun](https://bun.sh) installed
+- **Bun** installed on your machine.
+  - **Windows (PowerShell)**:
+    1. Run: `powershell -c "irm bun.sh/install.ps1 | iex"`
+    2. *Note: If `'bun'` is not recognized after installation, add `C:\Users\<YourUsername>\.bun\bin` to your User Environment Variables PATH (replace `<YourUsername>` with your Windows account name) and restart your terminal.*
+  - **macOS / Linux**: Run `curl -fsSL https://bun.sh/install | bash`
 - PostgreSQL database, such as [Neon](https://neon.tech)
 - [Clerk](https://clerk.com) application configured for OAuth
 - An Anthropic API key (and optionally other provider keys)
