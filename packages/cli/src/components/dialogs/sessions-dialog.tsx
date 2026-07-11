@@ -69,7 +69,7 @@ export const SessionsDialogContent = () => {
     );
   }
 
-  const { isWin32 } = useTheme();
+  const { isWin32, colors } = useTheme();
 
   return (
     <DialogSearchList
@@ -77,20 +77,19 @@ export const SessionsDialogContent = () => {
       onSelect={handleSelect}
       filterFn={(s, query) => s.title.toLowerCase().includes(query.toLowerCase())}
       renderItem={(session, isSelected) => {
-        const textFg = !isWin32 && isSelected ? "black" : "white";
-        const metadataFg = !isWin32 && isSelected ? "black" : undefined;
-        const selectionAttr = isWin32 && isSelected ? TextAttributes.REVERSE : undefined;
+        const textFg = isSelected ? (isWin32 ? colors.primary : "black") : "white";
+        const metadataFg = isSelected ? (isWin32 ? "white" : "black") : undefined;
 
         return (
           <>
-            <text selectable={false} fg={textFg} attributes={selectionAttr}>
+            <text selectable={false} fg={textFg}>
               {session.title}
             </text>
             <box flexGrow={1} />
             <text
               selectable={false}
               fg={metadataFg}
-              attributes={selectionAttr || TextAttributes.DIM}
+              attributes={isSelected ? undefined : TextAttributes.DIM}
             >
               {format(new Date(session.createdAt), "hh:mm a")}
             </text>

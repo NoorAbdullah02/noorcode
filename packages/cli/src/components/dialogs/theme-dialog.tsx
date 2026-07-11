@@ -8,7 +8,7 @@ import type { Theme } from "../../theme";
 
 export const ThemeDialogContent = () => {
   const dialog = useDialog();
-  const { setTheme, currentTheme, isWin32 } = useTheme();
+  const { setTheme, currentTheme, isWin32, colors } = useTheme();
   const originalThemeRef = useRef(currentTheme);
   const confirmedRef = useRef(false);
 
@@ -43,18 +43,17 @@ export const ThemeDialogContent = () => {
       onSelect={handleSelect}
       onHighlight={handleHighlight}
       filterFn={(t, query) => t.name.toLowerCase().includes(query.toLowerCase())}
-      renderItem={(theme, isSelected) => (
-        <text
-          selectable={false}
-          fg={!isWin32 && isSelected ? "black" : "white"}
-          attributes={isWin32 && isSelected ? TextAttributes.REVERSE : undefined}
-        >
-          {theme.name === originalThemeRef.current.name
-            ? "\u0020\u2022\u0020"
-            : "\u0020\u0020\u0020"}
-          {theme.name}
-        </text>
-      )}
+      renderItem={(theme, isSelected) => {
+        const textFg = isSelected ? (isWin32 ? colors.primary : "black") : "white";
+        return (
+          <text selectable={false} fg={textFg}>
+            {theme.name === originalThemeRef.current.name
+              ? "\u0020\u2022\u0020"
+              : "\u0020\u0020\u0020"}
+            {theme.name}
+          </text>
+        );
+      }}
       getKey={(t) => t.name}
       placeholder="Search themes"
       emptyText="No matching themes"

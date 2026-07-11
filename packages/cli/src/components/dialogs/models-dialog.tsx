@@ -15,7 +15,7 @@ export const ModelsDialogContent = ({
   onSelectModel 
 }: ModelsDialogContentProps) => {
   const dialog = useDialog();
-  const { isWin32 } = useTheme();
+  const { isWin32, colors } = useTheme();
 
   const handleSelect = useCallback(
     (modelId: SupportedChatModelId) => {
@@ -30,15 +30,14 @@ export const ModelsDialogContent = ({
       items={models}
       onSelect={handleSelect}
       filterFn={(modelId, query) => modelId.toLowerCase().includes(query.toLowerCase())}
-      renderItem={(modelId, isSelected) => (
-        <text
-          selectable={false}
-          fg={!isWin32 && isSelected ? "black" : "white"}
-          attributes={isWin32 && isSelected ? TextAttributes.REVERSE : undefined}
-        >
-          {modelId}
-        </text>
-      )}
+      renderItem={(modelId, isSelected) => {
+        const textFg = isSelected ? (isWin32 ? colors.primary : "black") : "white";
+        return (
+          <text selectable={false} fg={textFg}>
+            {modelId}
+          </text>
+        );
+      }}
       getKey={(modelId) => modelId}
       placeholder="Search models"
       emptyText="No matching models"

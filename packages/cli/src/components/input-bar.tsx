@@ -1,14 +1,7 @@
 import { readdir } from "node:fs/promises";
 import { isAbsolute, relative, resolve } from "node:path";
-
 import { useRef, useState, useCallback, useEffect, type RefObject } from "react";
-
 import { TextAttributes } from "@opentui/core";
-
-// On Windows, backgroundColor floods the entire row with the selection color.
-// TextAttributes.REVERSE (invert fg/bg) is a safe universal alternative.
-const REVERSE = TextAttributes.REVERSE;
-
 import type { TextareaRenderable, ScrollBoxRenderable } from "@opentui/core";
 import { useKeyboard, useRenderer } from "@opentui/react";
 import type { KeyBinding } from "@opentui/core";
@@ -231,8 +224,8 @@ function FileMentionMenu({
     <scrollbox ref={scrollRef} height={visibleHeight}>
       {candidates.map((candidate, index) => {
         const isSelected = index === selectedIndex;
-        const selectionBg = isWin32 ? undefined : (isSelected ? colors.selection : undefined);
-        const selectionAttr = isWin32 && isSelected ? REVERSE : undefined;
+        const textFg = isSelected ? (isWin32 ? colors.primary : "black") : "white";
+        const metaFg = isSelected ? (isWin32 ? "white" : "black") : "gray";
 
         return (
           <box
@@ -241,26 +234,18 @@ function FileMentionMenu({
             paddingX={1}
             height={1}
             overflow="hidden"
-            backgroundColor={selectionBg}
+            backgroundColor={isSelected ? colors.selection : undefined}
             onMouseMove={() => onSelect(index)}
             onMouseDown={() => onExecute(index)}
           >
             <box flexGrow={1} flexShrink={1} overflow="hidden">
-              <text
-                selectable={false}
-                fg={!isWin32 && isSelected ? "black" : "white"}
-                attributes={selectionAttr}
-              >
+              <text selectable={false} fg={textFg}>
                 {candidate.path}
               </text>
             </box>
 
             <box width={8} alignItems="flex-end" flexShrink={0}>
-              <text
-                selectable={false}
-                fg={!isWin32 && isSelected ? "black" : "gray"}
-                attributes={selectionAttr}
-              >
+              <text selectable={false} fg={metaFg}>
                 {candidate.kind === "directory" ? "Folder" : "File"}
               </text>
             </box>

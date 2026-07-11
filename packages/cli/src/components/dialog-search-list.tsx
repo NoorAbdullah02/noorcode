@@ -103,14 +103,13 @@ export function DialogSearchList<T>({
         <scrollbox ref={scrollRef} height={visibleHeight}>
           {filtered.map((item, i) => {
             const isSelected = i === selectedIndex;
-            const selectionBg = isWin32 ? undefined : (isSelected ? colors.selection : undefined);
             return (
               <box
                 key={getKey(item)}
                 flexDirection="row"
                 height={1}
                 overflow="hidden"
-                backgroundColor={selectionBg}
+                backgroundColor={isSelected ? colors.selection : undefined}
                 onMouseMove={() => {
                   setSelectedIndex(i);
                   if (onHighlight) onHighlight(item);

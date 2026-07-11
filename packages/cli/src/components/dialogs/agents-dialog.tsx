@@ -21,7 +21,7 @@ export const AgentsDialogContent = ({
   onSelectMode 
 }: AgentsDialogContentProps) => {
   const dialog = useDialog();
-  const { isWin32 } = useTheme();
+  const { isWin32, colors } = useTheme();
 
   const handleSelect = useCallback(
     (nextMode: ModeType) => {
@@ -36,16 +36,15 @@ export const AgentsDialogContent = ({
       items={AVAILABLE_MODES}
       onSelect={handleSelect}
       filterFn={(item, query) => getModeLabel(item).toLowerCase().includes(query.toLowerCase())}
-      renderItem={(item, isSelected) => (
-        <text
-          selectable={false}
-          fg={!isWin32 && isSelected ? "black" : "white"}
-          attributes={isWin32 && isSelected ? TextAttributes.REVERSE : undefined}
-        >
-          {item === currentMode ? " • " : "   "}
-          {getModeLabel(item)}
-        </text>
-      )}
+      renderItem={(item, isSelected) => {
+        const textFg = isSelected ? (isWin32 ? colors.primary : "black") : "white";
+        return (
+          <text selectable={false} fg={textFg}>
+            {item === currentMode ? " • " : "   "}
+            {getModeLabel(item)}
+          </text>
+        );
+      }}
       getKey={(item) => item}
       placeholder="Search agents"
       emptyText="No matching agents"
