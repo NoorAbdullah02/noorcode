@@ -1,6 +1,6 @@
 {
   "name": "@noorcode/cli",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "module": "src/index.tsx",
   "type": "module",
   "private": false,
@@ -9,7 +9,7 @@
     "dist"
   ],
   "bin": {
-    "noorcode": "./bin/noorcode"
+    "noorcode": "bin/noorcode.js"
   },
   "scripts": {
     "dev": "bun run --watch src/index.tsx",
