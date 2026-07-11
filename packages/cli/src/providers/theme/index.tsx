@@ -9,6 +9,12 @@ import { DEFAULT_THEME, THEMES } from "../../theme";
 const CONFIG_DIR = join(homedir(), ".noorcode");
 const THEME_PREFERENCES_PATH = join(CONFIG_DIR, "preferences.json");
 
+// On Windows, terminals often only support 16 ANSI colors. Any hex color gets
+// quantized to the nearest ANSI slot, causing surface colors (slightly lighter
+// than background) to map to bright gray (slot 7/8), creating ugly gray boxes.
+// We detect this at startup and let every component skip surface backgrounds.
+const IS_WIN32 = process.platform === "win32";
+
 type ThemePreferences = {
   themeName: string;
 };
@@ -42,6 +48,8 @@ type ThemeContextValue = {
   colors: ThemeColors;
   currentTheme: Theme;
   setTheme: (theme: Theme) => void;
+  /** True when running on Windows — use to skip surface backgroundColor props */
+  isWin32: boolean;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -66,7 +74,11 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     persistTheme(theme);
   }, []);
 
-  const colors = process.platform === "win32"
+  // On Windows, surface/dialogSurface map to the same ANSI slot as background
+  // but sometimes render as a different (brighter) terminal color. Overriding
+  // them to be identical to background prevents visible color differences when
+  // the terminal quantizes hex values to the 16-color ANSI palette.
+  const colors: ThemeColors = IS_WIN32
     ? {
         ...currentTheme.colors,
         surface: currentTheme.colors.background,
@@ -76,8 +88,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   return (
     <ThemeContext.Provider 
-      value={{ colors, currentTheme, setTheme }}>
+      value={{ colors, currentTheme, setTheme, isWin32: IS_WIN32 }}>
       {children}
     </ThemeContext.Provider>
   );
 }
+

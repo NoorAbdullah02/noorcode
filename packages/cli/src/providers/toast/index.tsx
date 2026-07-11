@@ -75,7 +75,7 @@ type ToastProps = {
 
 function Toast({ currentToast }: ToastProps) {
   const { width } = useTerminalDimensions();
-  const { colors } = useTheme();
+  const { colors, isWin32 } = useTheme();
 
   if (!currentToast) {
     return null;
@@ -103,7 +103,7 @@ function Toast({ currentToast }: ToastProps) {
       paddingRight={2}
       paddingTop={1}
       paddingBottom={1}
-      backgroundColor={colors.surface}
+      backgroundColor={isWin32 ? undefined : colors.surface}
       borderColor={borderColor}
       border={["left", "right"]}
       customBorderChars={SplitBorderChars}

@@ -285,9 +285,8 @@ export function InputBar({ onSubmit, disabled = false, history }: Props) {
   const navigate = useNavigate();
   const toast = useToast();
   const dialog = useDialog();
-  const { colors } = useTheme();
+  const { colors, isWin32 } = useTheme();
   const { isTopLayer, push, pop, setResponder } = useKeyboardLayer();
-
   const [activeMention, setActiveMention] = useState<MentionMatch | null>(null);
   const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([]);
   const [mentionSelectedIndex, setMentionSelectedIndex] = useState(0);
@@ -618,7 +617,7 @@ export function InputBar({ onSubmit, disabled = false, history }: Props) {
           justifyContent="center"
           paddingX={2}
           paddingY={1}
-          backgroundColor={colors.surface}
+          backgroundColor={isWin32 ? undefined : colors.surface}
           width="100%"
           gap={1}
         >
@@ -628,7 +627,7 @@ export function InputBar({ onSubmit, disabled = false, history }: Props) {
               bottom="100%"
               left={0}
               width="100%"
-              backgroundColor={colors.surface}
+              backgroundColor={isWin32 ? undefined : colors.surface}
               zIndex={10}
             >
               <CommandMenu
@@ -646,7 +645,7 @@ export function InputBar({ onSubmit, disabled = false, history }: Props) {
               bottom="100%"
               left={0}
               width="100%"
-              backgroundColor={colors.surface}
+              backgroundColor={isWin32 ? undefined : colors.surface}
               zIndex={10}
             >
               <FileMentionMenu

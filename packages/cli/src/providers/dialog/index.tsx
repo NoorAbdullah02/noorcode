@@ -66,7 +66,7 @@ type DialogProps = {
 function Dialog({ currentDialog, close }: DialogProps) {
   const { isTopLayer } = useKeyboardLayer();
   const dimensions = useTerminalDimensions();
-  const { colors } = useTheme();
+  const { colors, isWin32 } = useTheme();
 
   useKeyboard((key) => {
     if (!currentDialog || !isTopLayer("dialog")) return;
@@ -98,7 +98,7 @@ function Dialog({ currentDialog, close }: DialogProps) {
       <box
         width={Math.min(60, dimensions.width - 4)}
         height="auto"
-        backgroundColor={colors.dialogSurface}
+        backgroundColor={isWin32 ? undefined : colors.dialogSurface}
         paddingX={4}
         paddingY={1}
         flexDirection="column"
