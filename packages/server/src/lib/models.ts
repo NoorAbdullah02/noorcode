@@ -12,6 +12,7 @@ import type { LanguageModel } from "ai";
 type AnthropicModelId = Extract<SupportedChatModel, { provider: "anthropic" }>["id"];
 type BynaraModelId = Extract<SupportedChatModel, { provider: "bynara" }>["id"];
 type OpenCodeModelId = Extract<SupportedChatModel, { provider: "opencode" }>["id"];
+type OpenAIModelId = Extract<SupportedChatModel, { provider: "openai" }>["id"];
 
 export type ResolvedModel = {
   model: LanguageModel;
@@ -47,6 +48,10 @@ const bynara = createOpenAI({
 const opencode = createOpenAI({
   baseURL: "https://opencode.ai/zen/v1",
   apiKey: process.env.OPENCODE_API_KEY,
+});
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 function assertUnsupportedProvider(provider: never): never {
@@ -86,6 +91,18 @@ function resolveOpenCodeModel(modelId: OpenCodeModelId): ResolvedModel {
   };
 }
 
+function resolveOpenAIModel(modelId: OpenAIModelId): ResolvedModel {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY environment variable is required to use openai models");
+  }
+
+  return {
+    model: openai.chat(modelId),
+    provider: "openai",
+    modelId,
+  };
+}
+
 function resolveSupportedChatModel(model: SupportedChatModel): ResolvedModel {
   const provider = model.provider;
 
@@ -96,6 +113,8 @@ function resolveSupportedChatModel(model: SupportedChatModel): ResolvedModel {
       return resolveBynaraModel(model.id);
     case "opencode":
       return resolveOpenCodeModel(model.id);
+    case "openai":
+      return resolveOpenAIModel(model.id);
     default:
       return assertUnsupportedProvider(provider);
   }
