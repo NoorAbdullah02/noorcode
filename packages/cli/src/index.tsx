@@ -5,6 +5,26 @@ import { RootLayout } from "./layouts/root-layout";
 import { Home } from "./screens/home";
 import { NewSession } from "./screens/new-session";
 import { Session } from "./screens/session";
+import packageJson from "../package.json";
+
+const args = process.argv.slice(2);
+if (args.includes("--version") || args.includes("-v")) {
+  console.log(packageJson.version);
+  process.exit(0);
+}
+
+if (args.includes("--help") || args.includes("-h")) {
+  console.log(`NoorCode CLI v${packageJson.version}
+
+Usage:
+  noorcode [options]
+
+Options:
+  -v, --version  Show version number
+  -h, --help     Show help message
+`);
+  process.exit(0);
+}
 
 const router = createMemoryRouter([
   {
