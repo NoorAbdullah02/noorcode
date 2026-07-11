@@ -78,14 +78,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // but sometimes render as a different (brighter) terminal color. Overriding
   // them to be identical to background prevents visible color differences when
   // the terminal quantizes hex values to the 16-color ANSI palette.
-  const colors: ThemeColors = IS_WIN32
-    ? {
-        ...currentTheme.colors,
-        surface: currentTheme.colors.background,
-        dialogSurface: currentTheme.colors.background,
-        selection: "#777777", // Visible gray selection background for 16-color consoles
-      }
-    : currentTheme.colors;
+  const colors: ThemeColors = currentTheme.colors;
 
   return (
     <ThemeContext.Provider 
