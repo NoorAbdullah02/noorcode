@@ -66,9 +66,17 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     persistTheme(theme);
   }, []);
 
+  const colors = process.platform === "win32"
+    ? {
+        ...currentTheme.colors,
+        surface: currentTheme.colors.background,
+        dialogSurface: currentTheme.colors.background,
+      }
+    : currentTheme.colors;
+
   return (
     <ThemeContext.Provider 
-      value={{ colors: currentTheme.colors, currentTheme, setTheme }}>
+      value={{ colors, currentTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
