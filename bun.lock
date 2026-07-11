@@ -11,13 +11,12 @@
     },
     "packages/cli": {
       "name": "@noorcode/cli",
-      "version": "1.0.8",
+      "version": "1.0.9",
       "bin": {
         "noorcode": "bin/noorcode",
       },
       "dependencies": {
         "@ai-sdk/react": "^3.0.186",
-        "@noorcode/shared": "workspace:*",
         "@opentui/core": "^0.1.97",
         "@opentui/react": "^0.1.97",
         "ai": "^6.0.184",
@@ -32,6 +31,7 @@
       },
       "devDependencies": {
         "@noorcode/server": "workspace:*",
+        "@noorcode/shared": "workspace:*",
         "@types/bun": "latest",
         "@types/react": "^19.2.14",
       },
