@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
+import { TextAttributes } from "@opentui/core";
 import { useDialog } from "../../providers/dialog";
 import { useTheme } from "../../providers/theme";
 import { DialogSearchList } from "../dialog-search-list";
@@ -7,7 +8,7 @@ import type { Theme } from "../../theme";
 
 export const ThemeDialogContent = () => {
   const dialog = useDialog();
-  const { setTheme, currentTheme } = useTheme();
+  const { setTheme, currentTheme, isWin32 } = useTheme();
   const originalThemeRef = useRef(currentTheme);
   const confirmedRef = useRef(false);
 
@@ -43,7 +44,11 @@ export const ThemeDialogContent = () => {
       onHighlight={handleHighlight}
       filterFn={(t, query) => t.name.toLowerCase().includes(query.toLowerCase())}
       renderItem={(theme, isSelected) => (
-        <text selectable={false} fg={isSelected ? "black" : "white"}>
+        <text
+          selectable={false}
+          fg={!isWin32 && isSelected ? "black" : "white"}
+          attributes={isWin32 && isSelected ? TextAttributes.REVERSE : undefined}
+        >
           {theme.name === originalThemeRef.current.name
             ? "\u0020\u2022\u0020"
             : "\u0020\u0020\u0020"}

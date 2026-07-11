@@ -5,6 +5,10 @@ import { useRef, useState, useCallback, useEffect, type RefObject } from "react"
 
 import { TextAttributes } from "@opentui/core";
 
+// On Windows, backgroundColor floods the entire row with the selection color.
+// TextAttributes.REVERSE (invert fg/bg) is a safe universal alternative.
+const REVERSE = TextAttributes.REVERSE;
+
 import type { TextareaRenderable, ScrollBoxRenderable } from "@opentui/core";
 import { useKeyboard, useRenderer } from "@opentui/react";
 import type { KeyBinding } from "@opentui/core";
@@ -212,7 +216,7 @@ function FileMentionMenu({
   onSelect,
   onExecute,
 }: FileMentionMenuProps) {
-  const { colors } = useTheme();
+  const { colors, isWin32 } = useTheme();
   const visibleHeight = Math.min(candidates.length, MAX_VISIBLE_MENTIONS);
 
   if (candidates.length === 0) {
@@ -227,6 +231,8 @@ function FileMentionMenu({
     <scrollbox ref={scrollRef} height={visibleHeight}>
       {candidates.map((candidate, index) => {
         const isSelected = index === selectedIndex;
+        const selectionBg = isWin32 ? undefined : (isSelected ? colors.selection : undefined);
+        const selectionAttr = isWin32 && isSelected ? REVERSE : undefined;
 
         return (
           <box
@@ -235,18 +241,26 @@ function FileMentionMenu({
             paddingX={1}
             height={1}
             overflow="hidden"
-            backgroundColor={isSelected ? colors.selection : undefined}
+            backgroundColor={selectionBg}
             onMouseMove={() => onSelect(index)}
             onMouseDown={() => onExecute(index)}
           >
             <box flexGrow={1} flexShrink={1} overflow="hidden">
-              <text selectable={false} fg={isSelected ? "black" : "white"}>
+              <text
+                selectable={false}
+                fg={!isWin32 && isSelected ? "black" : "white"}
+                attributes={selectionAttr}
+              >
                 {candidate.path}
               </text>
             </box>
 
             <box width={8} alignItems="flex-end" flexShrink={0}>
-              <text selectable={false} fg={isSelected ? "black" : "gray"}>
+              <text
+                selectable={false}
+                fg={!isWin32 && isSelected ? "black" : "gray"}
+                attributes={selectionAttr}
+              >
                 {candidate.kind === "directory" ? "Folder" : "File"}
               </text>
             </box>

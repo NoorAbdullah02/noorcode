@@ -1,5 +1,7 @@
 import { useCallback } from "react";
+import { TextAttributes } from "@opentui/core";
 import { useDialog } from "../../providers/dialog";
+import { useTheme } from "../../providers/theme";
 import { DialogSearchList } from "../dialog-search-list";
 import { Mode, type ModeType } from "@noorcode/shared";
 
@@ -19,6 +21,7 @@ export const AgentsDialogContent = ({
   onSelectMode 
 }: AgentsDialogContentProps) => {
   const dialog = useDialog();
+  const { isWin32 } = useTheme();
 
   const handleSelect = useCallback(
     (nextMode: ModeType) => {
@@ -34,7 +37,11 @@ export const AgentsDialogContent = ({
       onSelect={handleSelect}
       filterFn={(item, query) => getModeLabel(item).toLowerCase().includes(query.toLowerCase())}
       renderItem={(item, isSelected) => (
-        <text selectable={false} fg={isSelected ? "black" : "white"}>
+        <text
+          selectable={false}
+          fg={!isWin32 && isSelected ? "black" : "white"}
+          attributes={isWin32 && isSelected ? TextAttributes.REVERSE : undefined}
+        >
           {item === currentMode ? " • " : "   "}
           {getModeLabel(item)}
         </text>

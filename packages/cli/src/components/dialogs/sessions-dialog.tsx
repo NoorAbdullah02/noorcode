@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { useNavigate } from "react-router";
 import { useDialog } from "../../providers/dialog";
 import { useToast } from "../../providers/toast";
+import { useTheme } from "../../providers/theme";
 import { apiClient } from "../../lib/api-client";
 import { getErrorMessage } from "../../lib/http-errors";
 import { DialogSearchList } from "../dialog-search-list";
@@ -68,26 +69,34 @@ export const SessionsDialogContent = () => {
     );
   }
 
+  const { isWin32 } = useTheme();
+
   return (
     <DialogSearchList
       items={sessions}
       onSelect={handleSelect}
       filterFn={(s, query) => s.title.toLowerCase().includes(query.toLowerCase())}
-      renderItem={(session, isSelected) => (
-        <>
-          <text selectable={false} fg={isSelected ? "black" : "white"}>
-            {session.title}
-          </text>
-          <box flexGrow={1} />
-          <text
-            selectable={false}
-            fg={isSelected ? "black" : undefined}
-            attributes={TextAttributes.DIM}
-          >
-            {format(new Date(session.createdAt), "hh:mm a")}
-          </text>
-        </>
-      )}
+      renderItem={(session, isSelected) => {
+        const textFg = !isWin32 && isSelected ? "black" : "white";
+        const metadataFg = !isWin32 && isSelected ? "black" : undefined;
+        const selectionAttr = isWin32 && isSelected ? TextAttributes.REVERSE : undefined;
+
+        return (
+          <>
+            <text selectable={false} fg={textFg} attributes={selectionAttr}>
+              {session.title}
+            </text>
+            <box flexGrow={1} />
+            <text
+              selectable={false}
+              fg={metadataFg}
+              attributes={selectionAttr || TextAttributes.DIM}
+            >
+              {format(new Date(session.createdAt), "hh:mm a")}
+            </text>
+          </>
+        );
+      }}
       getKey={(s) => s.id}
       placeholder="Search sessions"
       emptyText="No matching sessions"

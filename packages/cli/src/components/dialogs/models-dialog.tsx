@@ -1,5 +1,7 @@
 import { useCallback } from "react";
+import { TextAttributes } from "@opentui/core";
 import { useDialog } from "../../providers/dialog";
+import { useTheme } from "../../providers/theme";
 import { DialogSearchList } from "../dialog-search-list";
 import type { SupportedChatModelId } from "@noorcode/shared";
 
@@ -13,6 +15,7 @@ export const ModelsDialogContent = ({
   onSelectModel 
 }: ModelsDialogContentProps) => {
   const dialog = useDialog();
+  const { isWin32 } = useTheme();
 
   const handleSelect = useCallback(
     (modelId: SupportedChatModelId) => {
@@ -28,7 +31,11 @@ export const ModelsDialogContent = ({
       onSelect={handleSelect}
       filterFn={(modelId, query) => modelId.toLowerCase().includes(query.toLowerCase())}
       renderItem={(modelId, isSelected) => (
-        <text selectable={false} fg={isSelected ? "black" : "white"}>
+        <text
+          selectable={false}
+          fg={!isWin32 && isSelected ? "black" : "white"}
+          attributes={isWin32 && isSelected ? TextAttributes.REVERSE : undefined}
+        >
           {modelId}
         </text>
       )}

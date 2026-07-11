@@ -32,7 +32,7 @@ export function DialogSearchList<T>({
   const inputRef = useRef<InputRenderable>(null);
   const scrollRef = useRef<ScrollBoxRenderable>(null);
   const { isTopLayer } = useKeyboardLayer();
-  const { colors } = useTheme();
+  const { colors, isWin32 } = useTheme();
 
   const handleContentChange = useCallback(() => {
     const text = inputRef.current?.value ?? "";
@@ -103,13 +103,14 @@ export function DialogSearchList<T>({
         <scrollbox ref={scrollRef} height={visibleHeight}>
           {filtered.map((item, i) => {
             const isSelected = i === selectedIndex;
+            const selectionBg = isWin32 ? undefined : (isSelected ? colors.selection : undefined);
             return (
               <box
                 key={getKey(item)}
                 flexDirection="row"
                 height={1}
                 overflow="hidden"
-                backgroundColor={isSelected ? colors.selection : undefined}
+                backgroundColor={selectionBg}
                 onMouseMove={() => {
                   setSelectedIndex(i);
                   if (onHighlight) onHighlight(item);

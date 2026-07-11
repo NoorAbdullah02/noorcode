@@ -4,6 +4,10 @@ import { getFilteredCommands } from "./filter-commands";
 import { COMMANDS } from "./commands";
 import { useTheme } from "../../providers/theme";
 
+// On Windows, backgroundColor on a <box> floods the entire terminal row with
+// the selection color (the bright pink stripe users see). Use REVERSE instead.
+const REVERSE = TextAttributes.REVERSE;
+
 const MAX_VISIBLE_ITEMS = 8;
 
 // Align all command names in a fixed-width column so their descriptions
@@ -26,7 +30,7 @@ export function CommandMenu({
   onSelect,
   onExecute,
 }: CommandMenuProps) {
-  const { colors } = useTheme();
+  const { colors, isWin32 } = useTheme();
   const filtered = getFilteredCommands(query);
   const visibleHeight = Math.min(filtered.length, MAX_VISIBLE_ITEMS);
 
@@ -45,6 +49,11 @@ export function CommandMenu({
       {filtered.map((cmd, i) => {
         const isSelected = i === selectedIndex;
 
+        // On Windows use REVERSE text attribute for highlight; on other platforms
+        // use backgroundColor which renders correctly with truecolor support.
+        const selectionBg = isWin32 ? undefined : (isSelected ? colors.selection : undefined);
+        const selectionAttr = isWin32 && isSelected ? REVERSE : undefined;
+
         return (
           <box
             key={cmd.value}
@@ -52,17 +61,25 @@ export function CommandMenu({
             paddingX={1}
             height={1}
             overflow="hidden"
-            backgroundColor={isSelected ? colors.selection : undefined}
+            backgroundColor={selectionBg}
             onMouseMove={() => onSelect(i)}
             onMouseDown={() => onExecute(i)}
           >
             <box width={COMMAND_COL_WIDTH} flexShrink={0}>
-              <text selectable={false} fg={isSelected ? "black" : "white"}>
+              <text
+                selectable={false}
+                fg={!isWin32 && isSelected ? "black" : "white"}
+                attributes={selectionAttr}
+              >
                 /{cmd.name}
               </text>
             </box>
             <box flexGrow={1} flexShrink={1} overflow="hidden">
-              <text selectable={false} fg={isSelected ? "black" : "gray"}>
+              <text
+                selectable={false}
+                fg={!isWin32 && isSelected ? "black" : "gray"}
+                attributes={selectionAttr}
+              >
                 {cmd.description}
               </text>
             </box>
