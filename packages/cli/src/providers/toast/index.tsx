@@ -103,7 +103,7 @@ function Toast({ currentToast }: ToastProps) {
       paddingRight={2}
       paddingTop={1}
       paddingBottom={1}
-      backgroundColor={isWin32 ? undefined : colors.surface}
+      backgroundColor={colors.surface}
       borderColor={borderColor}
       border={["left", "right"]}
       customBorderChars={SplitBorderChars}

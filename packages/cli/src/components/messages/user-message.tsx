@@ -25,7 +25,7 @@ export function UserMessage({ message, mode }: Props) {
           justifyContent="center"
           paddingX={2}
           paddingY={1}
-          backgroundColor={isWin32 ? undefined : colors.surface}
+          backgroundColor={colors.surface}
           width="100%"
         >
           <text>{message}</text>

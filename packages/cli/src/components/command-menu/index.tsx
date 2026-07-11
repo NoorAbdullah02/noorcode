@@ -46,6 +46,7 @@ export function CommandMenu({
         const isSelected = i === selectedIndex;
         const textFg = isSelected ? "black" : "white";
         const descFg = isSelected ? "black" : "gray";
+        const prefix = isSelected && isWin32 ? "> " : (isWin32 ? "  " : "");
 
         return (
           <box
@@ -58,9 +59,9 @@ export function CommandMenu({
             onMouseMove={() => onSelect(i)}
             onMouseDown={() => onExecute(i)}
           >
-            <box width={COMMAND_COL_WIDTH} flexShrink={0}>
+            <box width={COMMAND_COL_WIDTH + (isWin32 ? 2 : 0)} flexShrink={0}>
               <text selectable={false} fg={textFg}>
-                /{cmd.name}
+                {prefix}/{cmd.name}
               </text>
             </box>
             <box flexGrow={1} flexShrink={1} overflow="hidden">

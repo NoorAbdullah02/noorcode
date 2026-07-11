@@ -38,8 +38,10 @@ export const AgentsDialogContent = ({
       filterFn={(item, query) => getModeLabel(item).toLowerCase().includes(query.toLowerCase())}
       renderItem={(item, isSelected) => {
         const textFg = isSelected ? "black" : "white";
+        const prefix = isSelected && isWin32 ? "> " : (isWin32 ? "  " : "");
         return (
           <text selectable={false} fg={textFg}>
+            {prefix}
             {item === currentMode ? " • " : "   "}
             {getModeLabel(item)}
           </text>

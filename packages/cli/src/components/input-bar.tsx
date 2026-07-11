@@ -226,6 +226,7 @@ function FileMentionMenu({
         const isSelected = index === selectedIndex;
         const textFg = isSelected ? "black" : "white";
         const metaFg = isSelected ? "black" : "gray";
+        const prefix = isSelected && isWin32 ? "> " : (isWin32 ? "  " : "");
 
         return (
           <box
@@ -240,7 +241,7 @@ function FileMentionMenu({
           >
             <box flexGrow={1} flexShrink={1} overflow="hidden">
               <text selectable={false} fg={textFg}>
-                {candidate.path}
+                {prefix}{candidate.path}
               </text>
             </box>
 
@@ -616,7 +617,7 @@ export function InputBar({ onSubmit, disabled = false, history }: Props) {
           justifyContent="center"
           paddingX={2}
           paddingY={1}
-          backgroundColor={isWin32 ? undefined : colors.surface}
+          backgroundColor={colors.surface}
           width="100%"
           gap={1}
         >
@@ -626,7 +627,7 @@ export function InputBar({ onSubmit, disabled = false, history }: Props) {
               bottom="100%"
               left={0}
               width="100%"
-              backgroundColor={isWin32 ? undefined : colors.surface}
+              backgroundColor={colors.surface}
               zIndex={10}
             >
               <CommandMenu
@@ -644,7 +645,7 @@ export function InputBar({ onSubmit, disabled = false, history }: Props) {
               bottom="100%"
               left={0}
               width="100%"
-              backgroundColor={isWin32 ? undefined : colors.surface}
+              backgroundColor={colors.surface}
               zIndex={10}
             >
               <FileMentionMenu

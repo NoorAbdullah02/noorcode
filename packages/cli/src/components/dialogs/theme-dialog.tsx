@@ -45,8 +45,10 @@ export const ThemeDialogContent = () => {
       filterFn={(t, query) => t.name.toLowerCase().includes(query.toLowerCase())}
       renderItem={(theme, isSelected) => {
         const textFg = isSelected ? "black" : "white";
+        const prefix = isSelected && isWin32 ? "> " : (isWin32 ? "  " : "");
         return (
           <text selectable={false} fg={textFg}>
+            {prefix}
             {theme.name === originalThemeRef.current.name
               ? "\u0020\u2022\u0020"
               : "\u0020\u0020\u0020"}

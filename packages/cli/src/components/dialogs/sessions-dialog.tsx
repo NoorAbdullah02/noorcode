@@ -79,10 +79,12 @@ export const SessionsDialogContent = () => {
       renderItem={(session, isSelected) => {
         const textFg = isSelected ? "black" : "white";
         const metadataFg = isSelected ? "black" : undefined;
+        const prefix = isSelected && isWin32 ? "> " : (isWin32 ? "  " : "");
 
         return (
           <>
             <text selectable={false} fg={textFg}>
+              {prefix}
               {session.title}
             </text>
             <box flexGrow={1} />
