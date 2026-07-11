@@ -83,7 +83,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         ...currentTheme.colors,
         surface: currentTheme.colors.background,
         dialogSurface: currentTheme.colors.background,
-        selection: "#3E3E3E", // Clean dark gray selection background for 16-color consoles
+        selection: "#777777", // Visible gray selection background for 16-color consoles
       }
     : currentTheme.colors;
 

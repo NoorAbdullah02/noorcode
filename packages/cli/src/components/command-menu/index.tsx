@@ -44,8 +44,8 @@ export function CommandMenu({
     <scrollbox ref={scrollRef} height={visibleHeight}>
       {filtered.map((cmd, i) => {
         const isSelected = i === selectedIndex;
-        const textFg = isSelected ? (isWin32 ? colors.primary : "black") : "white";
-        const descFg = isSelected ? (isWin32 ? "white" : "black") : "gray";
+        const textFg = isSelected ? "black" : "white";
+        const descFg = isSelected ? "black" : "gray";
 
         return (
           <box

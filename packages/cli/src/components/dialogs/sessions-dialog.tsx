@@ -77,8 +77,8 @@ export const SessionsDialogContent = () => {
       onSelect={handleSelect}
       filterFn={(s, query) => s.title.toLowerCase().includes(query.toLowerCase())}
       renderItem={(session, isSelected) => {
-        const textFg = isSelected ? (isWin32 ? colors.primary : "black") : "white";
-        const metadataFg = isSelected ? (isWin32 ? "white" : "black") : undefined;
+        const textFg = isSelected ? "black" : "white";
+        const metadataFg = isSelected ? "black" : undefined;
 
         return (
           <>

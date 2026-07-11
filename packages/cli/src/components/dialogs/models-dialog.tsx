@@ -31,7 +31,7 @@ export const ModelsDialogContent = ({
       onSelect={handleSelect}
       filterFn={(modelId, query) => modelId.toLowerCase().includes(query.toLowerCase())}
       renderItem={(modelId, isSelected) => {
-        const textFg = isSelected ? (isWin32 ? colors.primary : "black") : "white";
+        const textFg = isSelected ? "black" : "white";
         return (
           <text selectable={false} fg={textFg}>
             {modelId}

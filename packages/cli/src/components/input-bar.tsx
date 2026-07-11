@@ -224,8 +224,8 @@ function FileMentionMenu({
     <scrollbox ref={scrollRef} height={visibleHeight}>
       {candidates.map((candidate, index) => {
         const isSelected = index === selectedIndex;
-        const textFg = isSelected ? (isWin32 ? colors.primary : "black") : "white";
-        const metaFg = isSelected ? (isWin32 ? "white" : "black") : "gray";
+        const textFg = isSelected ? "black" : "white";
+        const metaFg = isSelected ? "black" : "gray";
 
         return (
           <box
