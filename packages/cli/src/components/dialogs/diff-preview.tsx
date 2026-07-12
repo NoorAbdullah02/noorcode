@@ -111,20 +111,22 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
       </box>
 
       {/* Body: Side-by-Side Diff */}
-      <box flexDirection="row" flexGrow={1} width="100%">
-        {/* Left: Old */}
-        <scrollbox width="50%" height="100%" border borderStyle="single" paddingRight={1}>
-          {leftLines.map((l, i) => (
-            <text key={i} fg={l.color}>{l.text}</text>
-          ))}
-        </scrollbox>
-        {/* Right: New */}
-        <scrollbox width="50%" height="100%" paddingLeft={1} border borderStyle="single">
-          {rightLines.map((l, i) => (
-            <text key={i} fg={l.color}>{l.text}</text>
-          ))}
-        </scrollbox>
-      </box>
+      <scrollbox flexGrow={1} width="100%" border borderStyle="single">
+        <box flexDirection="row" width="100%">
+          {/* Left: Old */}
+          <box width="50%" paddingRight={1}>
+            {leftLines.map((l, i) => (
+              <text key={i} fg={l.color}>{l.text}</text>
+            ))}
+          </box>
+          {/* Right: New */}
+          <box width="50%" paddingLeft={1} border={["left"]} borderStyle="single">
+            {rightLines.map((l, i) => (
+              <text key={i} fg={l.color}>{l.text}</text>
+            ))}
+          </box>
+        </box>
+      </scrollbox>
 
       {/* Footer / Controls */}
       <box flexDirection="row" justifyContent="space-between" paddingTop={1} border borderStyle="single">
