@@ -13,11 +13,12 @@ datasource db {
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  messages  Json     @default("[]")
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  messages    Json     @default("[]")
+  autoProceed Boolean  @default(false)
   @@index([userId, createdAt])
 }

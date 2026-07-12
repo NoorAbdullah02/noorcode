@@ -13,6 +13,8 @@ export {
   modeSchema,
   toolInputSchemas,
   getToolContracts,
+  createSessionSchema,
+  MAX_AUTO_PROCEED_STEPS,
   type ToolContracts,
   type ModeType,
 } from "./schemas";

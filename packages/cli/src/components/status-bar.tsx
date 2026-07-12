@@ -10,8 +10,8 @@ export function StatusBar() {
   return (
     <box flexDirection="row" gap={1}>
       
-      <text fg={mode === Mode.PLAN ? colors.planMode : colors.primary}>
-        {mode === Mode.PLAN ? "Plan" : "Build"}
+      <text fg={mode === Mode.BUILD ? colors.primary : mode === Mode.PLAN ? colors.planMode : colors.reviewMode}>
+        {mode === Mode.BUILD ? "Build" : mode === Mode.PLAN ? "Plan" : "Review"}
       </text>
 
       <text attributes={TextAttributes.DIM} fg={colors.dimSeparator}>

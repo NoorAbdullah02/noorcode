@@ -5,6 +5,7 @@ import { KeyboardLayerProvider } from "../providers/keyboard-layer";
 import { ThemeProvider } from "../providers/theme";
 import { ThemedRoot } from "./themed-root";
 import { PromptConfigProvider } from "../providers/prompt-config";
+import { DiffPreviewProvider } from "../providers/diff-preview";
 
 export function RootLayout() {
   return (
@@ -13,9 +14,11 @@ export function RootLayout() {
         <KeyboardLayerProvider>
           <DialogProvider>
             <PromptConfigProvider>
-              <ThemedRoot>
-                <Outlet />
-              </ThemedRoot>
+              <DiffPreviewProvider>
+                <ThemedRoot>
+                  <Outlet />
+                </ThemedRoot>
+              </DiffPreviewProvider>
             </PromptConfigProvider>
           </DialogProvider>
         </KeyboardLayerProvider>

@@ -20,8 +20,9 @@ export function SessionShell({
   loading = false,
   interruptible = false,
   history,
-}: Props) {
-  const { mode } = usePromptConfig();
+  autoProceedStep,
+}: Props & { autoProceedStep?: number }) {
+  const { mode, autoProceed } = usePromptConfig();
 
   return (
     <box
@@ -33,6 +34,11 @@ export function SessionShell({
       paddingX={2}
       gap={1}
     >
+      <box flexDirection="row" justifyContent="center">
+        {autoProceed ? (
+          <text fg="magenta">[Auto-Proceed: ON]</text>
+        ) : null}
+      </box>
       <scrollbox flexGrow={1} width="100%" stickyScroll stickyStart="bottom">
         <box>{children}</box>
       </scrollbox>
@@ -52,6 +58,9 @@ export function SessionShell({
           {loading ? (
             <>
               <Spinner mode={mode} />
+              {autoProceed && autoProceedStep ? (
+                <text>Auto-proceeding... Step {autoProceedStep}/25</text>
+              ) : null}
               {interruptible ? <text>esc to interrupt</text> : null}
             </>
           ) : null}

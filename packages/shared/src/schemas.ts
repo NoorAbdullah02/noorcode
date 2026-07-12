@@ -4,9 +4,10 @@ import { tool } from "ai";
 export const Mode = {
   BUILD: "BUILD",
   PLAN: "PLAN",
+  REVIEW: "REVIEW",
 } as const;
 
-export const modeSchema = z.enum([Mode.BUILD, Mode.PLAN]);
+export const modeSchema = z.enum([Mode.BUILD, Mode.PLAN, Mode.REVIEW]);
 
 export type ModeType = (typeof Mode)[keyof typeof Mode];
 
@@ -81,7 +82,14 @@ export const buildToolContracts = {
 export type ToolContracts = typeof buildToolContracts;
 
 export function getToolContracts(mode: ModeType) {
-  return mode === Mode.PLAN 
-    ? readOnlyToolContracts 
-    : buildToolContracts;
+  return mode === Mode.BUILD 
+    ? buildToolContracts 
+    : readOnlyToolContracts;
 };
+
+export const MAX_AUTO_PROCEED_STEPS = 25;
+
+export const createSessionSchema = z.object({
+  title: z.string(),
+  autoProceed: z.boolean().optional(),
+});

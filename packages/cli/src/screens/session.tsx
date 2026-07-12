@@ -64,11 +64,12 @@ function SessionChat({
   initialPrompt?: { message: string; mode: ModeType; model: SupportedChatModelId };
 }) {
   const [initialMessages] = useState(() => session.messages as unknown as Message[]);
-  const { mode, model } = usePromptConfig();
+  const { mode, model, autoProceed, toggleAutoProceed } = usePromptConfig();
   const { isTopLayer } = useKeyboardLayer();
-  const { messages, status, submit, abort, interrupt, error } = useChat(
+  const { messages, status, submit, abort, interrupt, error, autoProceedStep } = useChat(
     session.id,
-    initialMessages
+    initialMessages,
+    autoProceed
   );
   const hasSubmittedInitialPromptRef = useRef(false);
 
@@ -78,9 +79,6 @@ function SessionChat({
       .map((msg) => msg.parts.filter((p) => p.type === "text").map((p) => p.text).join(""))
       .filter((text) => text.length > 0);
 
-    // The very first message of a brand-new session is auto-submitted via
-    // the initialPrompt effect below, bypassing the input bar entirely, so
-    // it won't be in initialMessages yet — seed it in manually.
     if (initialPrompt?.message && !fromMessages.includes(initialPrompt.message)) {
       return [...fromMessages, initialPrompt.message];
     }
@@ -88,18 +86,23 @@ function SessionChat({
     return fromMessages;
   }, [initialMessages, initialPrompt]);
 
-  // Stop the pending reply when the user leaves this session.
   useEffect(() => {
     return () => {
       void abort();
     };
   }, [abort]);
 
-  // Let the user cancel a reply even before the first streamed chunk arrives.
   useKeyboard((key) => {
-    if (key.name === "escape" && isTopLayer("base") && status === "streaming") {
+    if (!isTopLayer("base")) return;
+    
+    if (key.name === "escape" && status === "streaming") {
       key.preventDefault();
       interrupt();
+    }
+    
+    if (key.ctrl && key.name === "a") {
+      key.preventDefault();
+      toggleAutoProceed();
     }
   });
 
@@ -119,6 +122,7 @@ function SessionChat({
       loading={status === "submitted" || status === "streaming"}
       interruptible={status === "submitted" || status === "streaming"}
       history={promptHistory}
+      autoProceedStep={autoProceedStep}
     >
       {messages.map((msg) => (
         <ChatMessage key={msg.id} msg={msg} />

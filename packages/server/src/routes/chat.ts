@@ -15,7 +15,8 @@ import {
   getToolContracts, 
   modeSchema, 
   type ModeType, 
-  type ToolContracts
+  type ToolContracts,
+  MAX_AUTO_PROCEED_STEPS
 } from "@noorcode/shared";
 import { buildSystemPrompt } from "../system-prompt";
 import type { AuthenticatedEnv } from "../middleware/require-auth";
@@ -29,6 +30,7 @@ type ChatMessageMetadata = {
   model?: string;
   durationMs?: number;
   usage?: LanguageModelUsage;
+  autoProceedStep?: number;
 };
 
 type NoorcodeUIMessage = UIMessage<ChatMessageMetadata, never, InferUITools<ToolContracts>>;
@@ -44,7 +46,9 @@ const submitSchema = z.object({
     .min(1),
   mode: modeSchema,
   model: z.string().refine(isSupportedChatModel, "Unsupported model"),
+  autoProceed: z.boolean().optional(),
 });
+
 
 const submitValidator = zValidator("json", submitSchema, (result, c) => {
   if (!result.success) {
@@ -70,7 +74,7 @@ const app = new Hono<AuthenticatedEnv>()
     submitValidator,
     async (c) => {
       const userId = c.get("userId");
-      const { id, messages, mode, model } = c.req.valid("json");
+      const { id, messages, mode, model, autoProceed } = c.req.valid("json");
 
       const session = await db.session.findUnique({
         where: { id, userId },
@@ -105,6 +109,16 @@ const app = new Hono<AuthenticatedEnv>()
         }
       }
 
+      let stepCount = 1;
+      if (autoProceed) {
+        for (let i = mergedMessages.length - 1; i >= 0; i--) {
+          const msg = mergedMessages[i];
+          if (!msg) continue;
+          if (msg.role === "user") break;
+          if (msg.role === "assistant") stepCount++;
+        }
+      }
+
       const nextMessages = await validateUIMessages<NoorcodeUIMessage>({
         messages: mergedMessages,
         tools,
@@ -112,9 +126,14 @@ const app = new Hono<AuthenticatedEnv>()
       const modelMessages = await convertToModelMessages(nextMessages, { tools });
       let completedUsage: LanguageModelUsage | null = null;
 
+      let systemPrompt = buildSystemPrompt({ mode });
+      if (autoProceed && stepCount >= MAX_AUTO_PROCEED_STEPS) {
+        systemPrompt = "The user has reached the maximum auto-proceed steps. You MUST reply ONLY with the exact text: 'Reached maximum auto-proceed steps (25). Pausing for your input.' Do not use any tools.";
+      }
+
       const result = streamText({
         model: resolvedModel.model,
-        system: buildSystemPrompt({ mode }),
+        system: systemPrompt,
         messages: modelMessages,
         tools,
         providerOptions: resolvedModel.providerOptions,
@@ -123,11 +142,21 @@ const app = new Hono<AuthenticatedEnv>()
         },
       });
 
+      const headers = new Headers();
+      if (autoProceed) {
+        headers.set("x-auto-proceed-step", stepCount.toString());
+      }
+
       return result.toUIMessageStreamResponse<NoorcodeUIMessage>({
+        headers,
         originalMessages: nextMessages,
         messageMetadata({ part }) {
           if (part.type === "start") {
-            return { mode, model };
+            return {
+              mode,
+              model,
+              autoProceedStep: autoProceed ? stepCount : undefined,
+            };
           }
 
           if (part.type !== "finish") return undefined;
@@ -135,6 +164,7 @@ const app = new Hono<AuthenticatedEnv>()
           return {
             mode,
             model,
+            autoProceedStep: autoProceed ? stepCount : undefined,
             durationMs: Date.now() - startTime,
             ...(completedUsage ? { usage: completedUsage } : {}),
           };

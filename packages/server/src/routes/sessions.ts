@@ -7,9 +7,7 @@ import type { AuthenticatedEnv } from "../middleware/require-auth";
 import { requireCreditsBalance } from "../middleware/require-credits-balance";
 
 
-const createSessionSchema = z.object({
-  title: z.string(),
-});
+import { createSessionSchema } from "@noorcode/shared";
 
 const createSessionValidator = zValidator(
   "json", createSessionSchema, (result, c) => {
@@ -54,7 +52,8 @@ const app = new Hono<AuthenticatedEnv>()
 
     const session = await db.session.create({
       data: {
-        ...data,
+        title: data.title,
+        autoProceed: data.autoProceed ?? false,
         userId,
       },
     });

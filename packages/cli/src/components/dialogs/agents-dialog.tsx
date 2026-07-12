@@ -5,7 +5,7 @@ import { useTheme } from "../../providers/theme";
 import { DialogSearchList } from "../dialog-search-list";
 import { Mode, type ModeType } from "@noorcode/shared";
 
-const AVAILABLE_MODES: ModeType[] = [Mode.BUILD, Mode.PLAN];
+const AVAILABLE_MODES: ModeType[] = [Mode.BUILD, Mode.PLAN, Mode.REVIEW];
 
 type AgentsDialogContentProps = {
   currentMode: ModeType;
@@ -13,7 +13,7 @@ type AgentsDialogContentProps = {
 };
 
 function getModeLabel(mode: ModeType) {
-  return mode === Mode.PLAN ? "Plan" : "Build";
+  return mode === Mode.BUILD ? "Build" : mode === Mode.PLAN ? "Plan" : "Review";
 }
 
 export const AgentsDialogContent = ({ 

@@ -80,7 +80,14 @@ function resolveShellCommand(command: string): string[] {
   return [shell, "-c", command];
 }
 
-export async function executeLocalTool(toolName: string, input: unknown, mode: ModeType) {
+type RequestPreviewFn = (path: string, oldContent: string, newContent: string) => Promise<boolean>;
+
+export async function executeLocalTool(
+  toolName: string, 
+  input: unknown, 
+  mode: ModeType,
+  requestPreview?: RequestPreviewFn
+) {
   if (mode === Mode.PLAN && !["readFile", "listDirectory", "glob", "grep"].includes(toolName)) {
     throw new Error(`Tool ${toolName} is not available in PLAN mode`);
   }
@@ -173,6 +180,21 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
     case "writeFile": {
       const { path, content } = toolInputSchemas.writeFile.parse(input);
       const { cwd, resolved } = resolveInsideCwd(path);
+      
+      let oldContent = "";
+      try {
+        oldContent = await readFile(resolved, "utf-8");
+      } catch (err: any) {
+        if (err.code !== "ENOENT") throw err;
+      }
+
+      if (requestPreview) {
+        const accepted = await requestPreview(relative(cwd, resolved), oldContent, content);
+        if (!accepted) {
+          throw new Error("User rejected the file write operation via Safe Apply Preview");
+        }
+      }
+
       await mkdir(dirname(resolved), { recursive: true });
       await writeFile(resolved, content, "utf-8");
       return {
@@ -190,7 +212,16 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
       if (occurrences === 0) throw new Error("oldString not found in file");
       if (occurrences > 1) throw new Error(`oldString is ambiguous; found ${occurrences} matches`);
 
-      await writeFile(resolved, content.replace(oldString, newString), "utf-8");
+      const nextContent = content.replace(oldString, newString);
+
+      if (requestPreview) {
+        const accepted = await requestPreview(relative(cwd, resolved), content, nextContent);
+        if (!accepted) {
+          throw new Error("User rejected the file edit operation via Safe Apply Preview");
+        }
+      }
+
+      await writeFile(resolved, nextContent, "utf-8");
       return { success: true as const, path: relative(cwd, resolved) };
     }
     case "bash": {

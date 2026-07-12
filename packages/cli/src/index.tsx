@@ -7,9 +7,15 @@ import { RootLayout } from "./layouts/root-layout";
 import { Home } from "./screens/home";
 import { NewSession } from "./screens/new-session";
 import { Session } from "./screens/session";
+import { ReviewScreen } from "./screens/review";
+import { projectIndexer } from "./lib/indexer";
 import packageJson from "../package.json";
 
+projectIndexer.init().catch(console.error);
+
 const args = process.argv.slice(2);
+const isReviewMode = args[0] === "review";
+
 if (args.includes("--version") || args.includes("-v")) {
   console.log(packageJson.version);
   process.exit(0);
@@ -22,16 +28,12 @@ An interactive AI coding assistant that runs directly in your terminal.
 
 Usage:
   noorcode             Start the interactive terminal interface
+  noorcode review      Run an AI code review on staged git changes
   noorcode [options]
 
 Options:
   -v, --version      Show version number
   -h, --help         Show this help message
-
-Getting Started:
-  Simply run \`noorcode\` in your terminal and press Enter to launch the UI.
-  From there, you can start a new coding session, chat with various AI models 
-  (like Claude, GPT-4o, Gemma, and GLM), and get instant coding help!
 `);
   process.exit(0);
 }
@@ -41,7 +43,7 @@ const router = createMemoryRouter([
     path: "/",
     element: <RootLayout />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: isReviewMode ? <ReviewScreen /> : <Home /> },
       { path: "sessions/new", element: <NewSession /> },
       { path: "sessions/:id", element: <Session /> },
     ]

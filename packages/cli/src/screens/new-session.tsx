@@ -12,6 +12,7 @@ const newSessionStateSchema = z.object({
   message: z.string(),
   mode: modeSchema,
   model: z.string(),
+  autoProceed: z.boolean().optional(),
 });
 
 export function NewSession() {
@@ -44,6 +45,7 @@ export function NewSession() {
         const res = await apiClient.sessions.$post({
           json: {
             title: state.message.slice(0, 100),
+            autoProceed: state.autoProceed,
           },
         });
 
