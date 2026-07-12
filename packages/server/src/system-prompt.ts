@@ -11,9 +11,10 @@ export function buildSystemPrompt({
 
   parts.push(`You are an expert software engineer working as a coding assistant inside a terminal application.
 
-  The application has two modes the user can switch between:
+  The application has three modes the user can switch between:
   - **PLAN** — Read-only analysis and planning. No file modifications.
-  - **BUILD** — Full implementation with read and write tools.`);
+  - **BUILD** — Full implementation with read and write tools.
+  - **REVIEW** — Senior-level code review and critique of staged changes.`);
 
   if (mode === "PLAN") {
     parts.push(`
@@ -22,7 +23,7 @@ export function buildSystemPrompt({
     - Use your available tools to explore the codebase
     - Present your analysis and a clear plan of action
     - Explain trade-offs and ask for clarification when needed`);
-  } else {
+  } else if (mode === "BUILD") {
     parts.push(`
     ## Mode: BUILD
     You are in build mode. Your job is to implement changes directly.
@@ -30,9 +31,16 @@ export function buildSystemPrompt({
     - Use writeFile to create new files, editFile for targeted modifications
     - Use bash to run commands (tests, builds, git operations)
     - After making changes, verify the work when possible`);
+  } else if (mode === "REVIEW") {
+    parts.push(`
+    ## Mode: REVIEW
+    You are in review mode. Your job is to act as a senior staff software engineer reviewing the user's staged code changes.
+    - Carefully analyze the provided git diff for bugs, edge cases, performance issues, and code smells.
+    - Provide constructive, actionable feedback.
+    - Use read-only tools to explore surrounding context if needed to understand the changes.`);
   }
 
-  if (mode === "PLAN") {
+  if (mode === "PLAN" || mode === "REVIEW") {
     parts.push(`
     ## Tool Usage
     You have these tools available:
