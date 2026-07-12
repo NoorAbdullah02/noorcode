@@ -181,22 +181,29 @@ export async function executeLocalTool(
       const { path, content } = toolInputSchemas.writeFile.parse(input);
       const { cwd, resolved } = resolveInsideCwd(path);
       
-      let oldContent = "";
+      let oldContent: string | null = null;
       try {
         oldContent = await readFile(resolved, "utf-8");
       } catch (err: any) {
         if (err.code !== "ENOENT") throw err;
       }
 
+      await mkdir(dirname(resolved), { recursive: true });
+      await writeFile(resolved, content, "utf-8");
+
       if (requestPreview) {
-        const accepted = await requestPreview(relative(cwd, resolved), oldContent, content);
+        const accepted = await requestPreview(relative(cwd, resolved), oldContent || "", content);
         if (!accepted) {
+          if (oldContent === null) {
+            const { unlink } = require("fs/promises");
+            await unlink(resolved).catch(() => {});
+          } else {
+            await writeFile(resolved, oldContent, "utf-8");
+          }
           throw new Error("User rejected the file write operation via Safe Apply Preview");
         }
       }
 
-      await mkdir(dirname(resolved), { recursive: true });
-      await writeFile(resolved, content, "utf-8");
       return {
         success: true as const,
         path: relative(cwd, resolved),
@@ -213,15 +220,16 @@ export async function executeLocalTool(
       if (occurrences > 1) throw new Error(`oldString is ambiguous; found ${occurrences} matches`);
 
       const nextContent = content.replace(oldString, newString);
+      await writeFile(resolved, nextContent, "utf-8");
 
       if (requestPreview) {
         const accepted = await requestPreview(relative(cwd, resolved), content, nextContent);
         if (!accepted) {
+          await writeFile(resolved, content, "utf-8");
           throw new Error("User rejected the file edit operation via Safe Apply Preview");
         }
       }
 
-      await writeFile(resolved, nextContent, "utf-8");
       return { success: true as const, path: relative(cwd, resolved) };
     }
     case "bash": {

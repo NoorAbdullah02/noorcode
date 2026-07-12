@@ -124,23 +124,41 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
           <text fg="yellow">{current.path}</text>
         </box>
 
-        {/* Body: Side-by-Side Diff */}
-        <scrollbox flexGrow={1} width="100%">
-          <box flexDirection="row" width="100%">
-            {/* Left: Old */}
-            <box width="50%" paddingRight={1}>
-              {leftLines.map((l, i) => (
-                <text key={i} fg={l.color}>{l.text}</text>
+        {/* Body: Sidebar + Diff */}
+        <box flexDirection="row" flexGrow={1} width="100%">
+          {/* Sidebar: File List */}
+          <box width="20%" flexDirection="column" paddingRight={1} border={["right"]} borderStyle="single">
+            <text attributes={TextAttributes.BOLD} fg="magenta" paddingBottom={1}>
+              Queue ({pending.length})
+            </text>
+            <scrollbox flexGrow={1} width="100%">
+              {pending.map((p, i) => (
+                <text key={p.id} fg={i === 0 ? "cyan" : "gray"}>
+                  {i === 0 ? "▶ " : "  "}
+                  {p.path.split("/").pop()}
+                </text>
               ))}
-            </box>
-            {/* Right: New */}
-            <box width="50%" paddingLeft={1} border={["left"]} borderStyle="single">
-              {rightLines.map((l, i) => (
-                <text key={i} fg={l.color}>{l.text}</text>
-              ))}
-            </box>
+            </scrollbox>
           </box>
-        </scrollbox>
+
+          {/* Diff View */}
+          <scrollbox flexGrow={1} width="80%" paddingLeft={1}>
+            <box flexDirection="row" width="100%">
+              {/* Left: Old */}
+              <box width="50%" paddingRight={1}>
+                {leftLines.map((l, i) => (
+                  <text key={i} fg={l.color}>{l.text}</text>
+                ))}
+              </box>
+              {/* Right: New */}
+              <box width="50%" paddingLeft={1} border={["left"]} borderStyle="single">
+                {rightLines.map((l, i) => (
+                  <text key={i} fg={l.color}>{l.text}</text>
+                ))}
+              </box>
+            </box>
+          </scrollbox>
+        </box>
 
         {/* Footer / Controls */}
         <box flexDirection="row" justifyContent="space-between" paddingTop={1} border={["top"]} borderStyle="single">
