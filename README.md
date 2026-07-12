@@ -42,10 +42,11 @@ The agent operates in two modes:
 - **Plan and Build Modes** — Use read-only planning tools or enable write, edit, and shell execution tools for implementation
 - **Streaming Responses** — Stream model output through the Vercel AI SDK with persisted session history
 - **Local Project Tools** — Read files, list directories, glob, grep, write files, edit files, and run shell commands scoped to the current project
-- **Multi-Model Support** — Choose from Anthropic Claude models (Opus, Sonnet, Haiku), Mistral via Bynara, and free DeepSeek/Nemotron models via OpenCode
+- **Multi-Model Support** — Choose from Anthropic Claude models (Opus, Sonnet, Haiku), Cerebras models (`gemma-4-31b`, `zai-glm-4.7`, `gpt-oss-120b`), Mistral via Bynara, and free DeepSeek/Nemotron models via OpenCode
 - **Persistent Sessions** — Store authenticated user sessions and full message history in Postgres via Prisma ORM
 - **Clerk OAuth** — Authenticate the CLI through a browser-based Clerk OAuth 2.0 + PKCE flow without embedding long-lived secrets in the terminal
 - **Usage Billing** — Meter AI token usage as credits through Polar before allowing session and chat actions; users purchase top-ups through a Polar checkout link
+- **Automatic Updates** — CLI automatically checks npm for newer versions and displays a top-level banner notifying you to update when a new version is available
 
 ---
 
@@ -73,6 +74,9 @@ The agent operates in two modes:
 | `claude-opus-4-6` *(default)* | Anthropic | $5.00 | $25.00 |
 | `claude-sonnet-4-6` | Anthropic | $3.00 | $15.00 |
 | `claude-haiku-4-5` | Anthropic | $1.00 | $5.00 |
+| `gemma-4-31b` | Cerebras | Free | Free |
+| `zai-glm-4.7` | Cerebras | Free | Free |
+| `gpt-oss-120b` | Cerebras | Free | Free |
 | `mistral-large` | Bynara | $2.00 | $6.00 |
 | `deepseek-v4-flash-free` | OpenCode | Free | Free |
 | `nemotron-3-ultra-free` | OpenCode | Free | Free |
@@ -143,6 +147,7 @@ DATABASE_URL=
 # AI provider keys
 ANTHROPIC_API_KEY=
 OPENAI_API_KEY=
+CEREBRAS_API_KEY=
 
 # Clerk OAuth application credentials
 CLERK_FRONTEND_API=
@@ -396,6 +401,7 @@ Run these from the repo root unless noted otherwise:
 | `DATABASE_URL` | Yes | Postgres connection string |
 | `ANTHROPIC_API_KEY` | Yes* | Anthropic API key for Claude models |
 | `OPENAI_API_KEY` | No | OpenAI API key (for future OpenAI model support) |
+| `CEREBRAS_API_KEY` | No | Cerebras API key for GLM, Gemma, and GPT-OSS models |
 | `CLERK_FRONTEND_API` | Yes | Clerk Frontend API URL |
 | `CLERK_OAUTH_CLIENT_ID` | Yes | Clerk OAuth application Client ID |
 | `CLERK_OAUTH_CLIENT_SECRET` | Yes | Clerk OAuth application Client Secret |

@@ -52,8 +52,10 @@ noorcode
 
 - **Terminal AI Chat**: Run an AI coding assistant directly in your terminal with a React-powered interface rendered at 60 fps.
 - **Plan and Build Modes**: Use read-only planning tools or enable file writing, file editing, and shell command execution.
+- **Multi-Model Support**: Chat with Anthropic Claude models, Cerebras models (`gemma-4-31b`, `zai-glm-4.7`, `gpt-oss-120b`), Mistral, and DeepSeek.
 - **Persistent Sessions**: Syncs and saves full message history with the cloud.
 - **Authentication**: Authenticate securely using a browser-based Clerk OAuth flow.
+- **Automatic Updates**: The CLI quietly checks npm in the background and notifies you with a top-level banner when a new version is available.
 
 ## Support
 
