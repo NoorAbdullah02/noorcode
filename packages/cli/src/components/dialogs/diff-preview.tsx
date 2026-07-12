@@ -99,50 +99,60 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
       left={0}
       width="100%"
       height="100%"
-      flexDirection="column"
-      padding={1}
+      justifyContent="center"
+      alignItems="center"
+      zIndex={100}
     >
-      {/* Header */}
-      <box flexDirection="row" justifyContent="space-between" paddingBottom={1} border borderStyle="single">
-        <text fg="cyan" attributes={TextAttributes.BOLD}>
-          Visual Diff Preview (File {pending.length} pending)
-        </text>
-        <text fg="yellow">{current.path}</text>
-      </box>
-
-      {/* Body: Side-by-Side Diff */}
-      <scrollbox flexGrow={1} width="100%" border borderStyle="single">
-        <box flexDirection="row" width="100%">
-          {/* Left: Old */}
-          <box width="50%" paddingRight={1}>
-            {leftLines.map((l, i) => (
-              <text key={i} fg={l.color}>{l.text}</text>
-            ))}
-          </box>
-          {/* Right: New */}
-          <box width="50%" paddingLeft={1} border={["left"]} borderStyle="single">
-            {rightLines.map((l, i) => (
-              <text key={i} fg={l.color}>{l.text}</text>
-            ))}
-          </box>
+      <box
+        width="90%"
+        height="80%"
+        flexDirection="column"
+        padding={1}
+        border
+        borderStyle="single"
+      >
+        {/* Header */}
+        <box flexDirection="row" justifyContent="space-between" paddingBottom={1} border={["bottom"]} borderStyle="single">
+          <text fg="cyan" attributes={TextAttributes.BOLD}>
+            Visual Diff Preview (File {pending.length} pending)
+          </text>
+          <text fg="yellow">{current.path}</text>
         </box>
-      </scrollbox>
 
-      {/* Footer / Controls */}
-      <box flexDirection="row" justifyContent="space-between" paddingTop={1} border borderStyle="single">
-        <box flexDirection="row" gap={2}>
-          <text fg="green">Enter×2: Accept</text>
-          <text fg="red">N×2: Reject</text>
-          <text fg="green">A×2: Accept All</text>
-          <text fg="red">R×2: Reject All</text>
-          <text fg="white">Q×2: Quit</text>
+        {/* Body: Side-by-Side Diff */}
+        <scrollbox flexGrow={1} width="100%">
+          <box flexDirection="row" width="100%">
+            {/* Left: Old */}
+            <box width="50%" paddingRight={1}>
+              {leftLines.map((l, i) => (
+                <text key={i} fg={l.color}>{l.text}</text>
+              ))}
+            </box>
+            {/* Right: New */}
+            <box width="50%" paddingLeft={1} border={["left"]} borderStyle="single">
+              {rightLines.map((l, i) => (
+                <text key={i} fg={l.color}>{l.text}</text>
+              ))}
+            </box>
+          </box>
+        </scrollbox>
+
+        {/* Footer / Controls */}
+        <box flexDirection="row" justifyContent="space-between" paddingTop={1} border={["top"]} borderStyle="single">
+          <box flexDirection="row" gap={2}>
+            <text fg="green">Enter×2: Accept</text>
+            <text fg="red">N×2: Reject</text>
+            <text fg="green">A×2: Accept All</text>
+            <text fg="red">R×2: Reject All</text>
+            <text fg="white">Q×2: Quit</text>
+          </box>
+          
+          {confirmMsg ? (
+            <text fg="yellow" attributes={TextAttributes.BOLD}>{confirmMsg}</text>
+          ) : (
+            <text fg="gray">Awaiting input...</text>
+          )}
         </box>
-        
-        {confirmMsg ? (
-          <text fg="yellow" attributes={TextAttributes.BOLD}>{confirmMsg}</text>
-        ) : (
-          <text fg="gray">Awaiting input...</text>
-        )}
       </box>
     </box>
   );
