@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useKeyboard } from "@opentui/react";
-import { TextAttributes } from "@opentui/core";
+import { TextAttributes, RGBA } from "@opentui/core";
+import { useTheme } from "../../providers/theme";
 import { diffLines } from "diff";
 
 type PendingPreview = {
@@ -92,6 +93,8 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
     });
   });
 
+  const { colors } = useTheme();
+
   return (
     <box
       position="absolute"
@@ -101,6 +104,7 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
       height="100%"
       justifyContent="center"
       alignItems="center"
+      backgroundColor={RGBA.fromInts(0, 0, 0, 150)}
       zIndex={100}
     >
       <box
@@ -110,6 +114,7 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
         padding={1}
         border
         borderStyle="single"
+        backgroundColor={colors.dialogSurface}
       >
         {/* Header */}
         <box flexDirection="row" justifyContent="space-between" paddingBottom={1} border={["bottom"]} borderStyle="single">
