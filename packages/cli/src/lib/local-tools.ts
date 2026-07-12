@@ -192,16 +192,16 @@ export async function executeLocalTool(
       await writeFile(resolved, content, "utf-8");
 
       if (requestPreview) {
-        const accepted = await requestPreview(relative(cwd, resolved), oldContent || "", content);
-        if (!accepted) {
-          if (oldContent === null) {
-            const { unlink } = require("fs/promises");
-            await unlink(resolved).catch(() => {});
-          } else {
-            await writeFile(resolved, oldContent, "utf-8");
+        requestPreview(relative(cwd, resolved), oldContent || "", content).then(async (accepted) => {
+          if (!accepted) {
+            if (oldContent === null) {
+              const { unlink } = require("fs/promises");
+              await unlink(resolved).catch(() => {});
+            } else {
+              await writeFile(resolved, oldContent, "utf-8");
+            }
           }
-          throw new Error("User rejected the file write operation via Safe Apply Preview");
-        }
+        });
       }
 
       return {
@@ -223,11 +223,11 @@ export async function executeLocalTool(
       await writeFile(resolved, nextContent, "utf-8");
 
       if (requestPreview) {
-        const accepted = await requestPreview(relative(cwd, resolved), content, nextContent);
-        if (!accepted) {
-          await writeFile(resolved, content, "utf-8");
-          throw new Error("User rejected the file edit operation via Safe Apply Preview");
-        }
+        requestPreview(relative(cwd, resolved), content, nextContent).then(async (accepted) => {
+          if (!accepted) {
+            await writeFile(resolved, content, "utf-8");
+          }
+        });
       }
 
       return { success: true as const, path: relative(cwd, resolved) };

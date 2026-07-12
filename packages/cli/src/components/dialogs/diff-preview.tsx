@@ -9,6 +9,8 @@ type PendingPreview = {
   path: string;
   oldContent: string;
   newContent: string;
+  additions: number;
+  deletions: number;
   resolve: (accepted: boolean) => void;
 };
 
@@ -16,11 +18,15 @@ type DiffPreviewDialogProps = {
   pending: PendingPreview[];
   onResolve: (id: string, accepted: boolean) => void;
   onResolveAll: (accepted: boolean) => void;
+  onHide?: () => void;
 };
 
-export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPreviewDialogProps) {
+export function DiffPreviewDialog({ pending, onResolve, onResolveAll, onHide }: DiffPreviewDialogProps) {
   const [confirmKey, setConfirmKey] = useState<string | null>(null);
-  const current = pending[0];
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  
+  const safeIndex = Math.min(selectedIndex, Math.max(0, pending.length - 1));
+  const current = pending[safeIndex];
 
   const diffChunks = useMemo(() => {
     if (!current) return [];
@@ -32,6 +38,18 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
     
     // Reset confirm if key doesn't match
     const actionKey = key.name.toLowerCase();
+
+    if (key.name === "up" || actionKey === "k") {
+      setSelectedIndex((i) => Math.max(0, i - 1));
+      setConfirmKey(null);
+      return;
+    }
+    if (key.name === "down" || actionKey === "j") {
+      setSelectedIndex((i) => Math.min(pending.length - 1, i + 1));
+      setConfirmKey(null);
+      return;
+    }
+
     const validKeys = ["enter", "n", "a", "r", "q", "return"];
     
     if (!validKeys.includes(actionKey)) {
@@ -133,8 +151,8 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
             </text>
             <scrollbox flexGrow={1} width="100%">
               {pending.map((p, i) => (
-                <text key={p.id} fg={i === 0 ? "cyan" : "gray"}>
-                  {i === 0 ? "▶ " : "  "}
+                <text key={p.id} fg={i === safeIndex ? "cyan" : "gray"}>
+                  {i === safeIndex ? "▶ " : "  "}
                   {p.path.split("/").pop()}
                 </text>
               ))}
@@ -163,6 +181,7 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
         {/* Footer / Controls */}
         <box flexDirection="row" justifyContent="space-between" paddingTop={1} border={["top"]} borderStyle="single">
           <box flexDirection="row" gap={2}>
+            <text fg="cyan">↑/↓: Navigate</text>
             <text fg="green">Enter×2: Accept</text>
             <text fg="red">N×2: Reject</text>
             <text fg="green">A×2: Accept All</text>
@@ -175,6 +194,96 @@ export function DiffPreviewDialog({ pending, onResolve, onResolveAll }: DiffPrev
           ) : (
             <text fg="gray">Awaiting input...</text>
           )}
+        </box>
+      </box>
+    </box>
+  );
+}
+
+type CompactDiffWidgetProps = {
+  pending: PendingPreview[];
+  onResolve: (id: string, accepted: boolean) => void;
+  onResolveAll: (accepted: boolean) => void;
+  onView: () => void;
+};
+
+export function CompactDiffWidget({ pending, onResolve, onResolveAll, onView }: CompactDiffWidgetProps) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const safeIndex = Math.min(selectedIndex, Math.max(0, pending.length - 1));
+  const current = pending[safeIndex];
+
+  useKeyboard((key) => {
+    if (!current) return;
+    const actionKey = key.name.toLowerCase();
+
+    if (key.name === "up" || actionKey === "k") {
+      setSelectedIndex((i) => Math.max(0, i - 1));
+      return;
+    }
+    if (key.name === "down" || actionKey === "j") {
+      setSelectedIndex((i) => Math.min(pending.length - 1, i + 1));
+      return;
+    }
+
+    if (actionKey === "a") {
+      if (key.shift || key.ctrl) onResolveAll(true);
+      else onResolve(current.id, true);
+      return;
+    }
+    if (actionKey === "r" || actionKey === "n") {
+      if (key.shift || key.ctrl) onResolveAll(false);
+      else onResolve(current.id, false);
+      return;
+    }
+    if (actionKey === "v" || actionKey === "enter" || actionKey === "return") {
+      onView();
+      return;
+    }
+  });
+
+  const { colors } = useTheme();
+  if (!current) return null;
+
+  return (
+    <box
+      position="absolute"
+      bottom={1}
+      right={1}
+      flexDirection="column"
+      padding={1}
+      border
+      borderStyle="single"
+      backgroundColor={colors.dialogSurface}
+      zIndex={50}
+    >
+      <scrollbox flexGrow={0} height={Math.min(pending.length, 10)}>
+        {pending.map((p, i) => {
+          const isSelected = i === safeIndex;
+          const shortPath = p.path.length > 20 ? "..." + p.path.slice(-20) : p.path;
+          return (
+            <box key={p.id} flexDirection="row" gap={1}>
+              <text fg={isSelected ? "cyan" : "gray"}>
+                {isSelected ? "▶" : " "}
+              </text>
+              <text fg="green">+{p.additions}</text>
+              <text fg="red">-{p.deletions}</text>
+              <text fg="yellow">{p.path.split("/").pop()}</text>
+              <text fg="gray">{shortPath}</text>
+            </box>
+          );
+        })}
+      </scrollbox>
+
+      <box flexDirection="column" paddingTop={1} border={["top"]} borderStyle="single">
+        <box flexDirection="row" gap={1}>
+          <text fg="cyan">↑/↓:Nav</text>
+          <text fg="green">A:Acc</text>
+          <text fg="red">R:Rej</text>
+          <text fg="magenta">V:View</text>
+        </box>
+        <box flexDirection="row" gap={1}>
+          <text fg="green">Shift+A:Acc All</text>
+          <text fg="red">Shift+R:Rej All</text>
         </box>
       </box>
     </box>

@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useRef, useCallback, useEffect, type ReactNode } from "react";
-import { DiffPreviewDialog } from "../../components/dialogs/diff-preview";
+import { useKeyboard } from "@opentui/react";
+import { TextAttributes, RGBA } from "@opentui/core";
+import { diffLines } from "diff";
+import { DiffPreviewDialog, CompactDiffWidget } from "../../components/dialogs/diff-preview";
 import { useToast } from "../toast";
 
 type PendingPreview = {
@@ -7,6 +10,8 @@ type PendingPreview = {
   path: string;
   oldContent: string;
   newContent: string;
+  additions: number;
+  deletions: number;
   resolve: (accepted: boolean) => void;
 };
 
@@ -21,11 +26,29 @@ export function DiffPreviewProvider({ children }: { children: ReactNode }) {
   const [queue, setQueue] = useState<PendingPreview[]>([]);
   const nextId = useRef(0);
   const [summary, setSummary] = useState<{ accepted: number; rejected: number } | null>(null);
+  const [isFullViewOpen, setIsFullViewOpen] = useState(false);
+
+  useKeyboard((key) => {
+    if (queue.length === 0) return;
+    if (key.ctrl && key.name.toLowerCase() === "v") {
+      setIsFullViewOpen((v) => !v);
+    }
+  });
 
   const requestPreview = useCallback((path: string, oldContent: string, newContent: string) => {
     return new Promise<boolean>((resolve) => {
       const id = String(nextId.current++);
-      setQueue((q) => [...q, { id, path, oldContent, newContent, resolve }]);
+      const chunks = diffLines(oldContent, newContent);
+      let additions = 0;
+      let deletions = 0;
+      for (const chunk of chunks) {
+        if (chunk.added) additions += chunk.count ?? 0;
+        if (chunk.removed) deletions += chunk.count ?? 0;
+      }
+      setQueue((q) => {
+        if (q.length === 0) setIsFullViewOpen(false); // Default to compact widget
+        return [...q, { id, path, oldContent, newContent, additions, deletions, resolve }];
+      });
     });
   }, []);
 
@@ -77,11 +100,20 @@ export function DiffPreviewProvider({ children }: { children: ReactNode }) {
   return (
     <DiffPreviewContext.Provider value={{ requestPreview: wrappedRequestPreview }}>
       {children}
-      {queue.length > 0 && (
+      {queue.length > 0 && !isFullViewOpen && (
+        <CompactDiffWidget
+          pending={queue}
+          onResolve={handleResolve}
+          onResolveAll={handleResolveAll}
+          onView={() => setIsFullViewOpen(true)}
+        />
+      )}
+      {queue.length > 0 && isFullViewOpen && (
         <DiffPreviewDialog
           pending={queue}
           onResolve={handleResolve}
           onResolveAll={handleResolveAll}
+          onHide={() => setIsFullViewOpen(false)}
         />
       )}
     </DiffPreviewContext.Provider>

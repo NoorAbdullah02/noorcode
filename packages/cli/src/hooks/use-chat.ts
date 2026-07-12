@@ -73,7 +73,12 @@ export function useChat(sessionId: string, initialMessages: Message[], autoProce
     onToolCall({ toolCall }) {
       const mode = chat.messages.at(-1)?.metadata?.mode ?? "BUILD";
 
-      void executeLocalTool(toolCall.toolName, toolCall.input, mode, requestPreview)
+      void executeLocalTool(
+        toolCall.toolName, 
+        toolCall.input, 
+        mode, 
+        autoProceed ? undefined : requestPreview
+      )
         .then(async (output) => {
           if (autoProceed) {
             await new Promise((r) => setTimeout(r, 750));
