@@ -1,6 +1,6 @@
 {
   "name": "@noorcode/cli",
-  "version": "1.0.24",
+  "version": "1.0.26",
   "module": "src/index.tsx",
   "type": "module",
   "private": false,
@@ -13,7 +13,7 @@
   },
   "scripts": {
     "dev": "bun run --watch src/index.tsx",
-    "build": "bun build src/index.tsx --outdir dist --target bun --packages external",
+    "build": "bun run build.ts",
     "compile": "bun build src/index.tsx --compile --outfile dist/noorcode",
     "typecheck": "tsc --noEmit"
   },

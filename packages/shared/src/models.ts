@@ -3,7 +3,7 @@ export type ModelPricing = {
   outputUsdPerMillionTokens: number;
 };
 
-export type SupportedProvider = "anthropic" | "bynara" | "opencode" | "openai";
+export type SupportedProvider = "anthropic" | "bynara" | "opencode" | "openai" | "cerebras";
 
 type SupportedChatModelDefinition = {
   id: string;
@@ -31,6 +31,30 @@ export const SUPPORTED_CHAT_MODELS = [
   {
     id: "nemotron-3-ultra-free",
     provider: "opencode",
+    pricing: {
+      inputUsdPerMillionTokens: 0,
+      outputUsdPerMillionTokens: 0,
+    },
+  },
+  {
+    id: "gpt-oss-120b",
+    provider: "cerebras",
+    pricing: {
+      inputUsdPerMillionTokens: 0,
+      outputUsdPerMillionTokens: 0,
+    },
+  },
+  {
+    id: "gemma-4-31b",
+    provider: "cerebras",
+    pricing: {
+      inputUsdPerMillionTokens: 0,
+      outputUsdPerMillionTokens: 0,
+    },
+  },
+  {
+    id: "zai-glm-4.7",
+    provider: "cerebras",
     pricing: {
       inputUsdPerMillionTokens: 0,
       outputUsdPerMillionTokens: 0,

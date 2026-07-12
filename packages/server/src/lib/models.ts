@@ -13,6 +13,7 @@ type AnthropicModelId = Extract<SupportedChatModel, { provider: "anthropic" }>["
 type BynaraModelId = Extract<SupportedChatModel, { provider: "bynara" }>["id"];
 type OpenCodeModelId = Extract<SupportedChatModel, { provider: "opencode" }>["id"];
 type OpenAIModelId = Extract<SupportedChatModel, { provider: "openai" }>["id"];
+type CerebrasModelId = Extract<SupportedChatModel, { provider: "cerebras" }>["id"];
 
 export type ResolvedModel = {
   model: LanguageModel;
@@ -53,6 +54,12 @@ const opencode = createOpenAI({
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const cerebras = createOpenAI({
+  baseURL: "https://api.cerebras.ai/v1",
+  apiKey: process.env.CEREBRAS_API_KEY,
+});
+
 
 function assertUnsupportedProvider(provider: never): never {
   throw new Error(`Unsupported provider: ${provider}`);
@@ -103,6 +110,19 @@ function resolveOpenAIModel(modelId: OpenAIModelId): ResolvedModel {
   };
 }
 
+function resolveCerebrasModel(modelId: CerebrasModelId): ResolvedModel {
+  if (!process.env.CEREBRAS_API_KEY) {
+    throw new Error("CEREBRAS_API_KEY environment variable is required to use cerebras models");
+  }
+
+  return {
+    model: cerebras.chat(modelId),
+    provider: "cerebras",
+    modelId,
+  };
+}
+
+
 function resolveSupportedChatModel(model: SupportedChatModel): ResolvedModel {
   const provider = model.provider;
 
@@ -115,6 +135,9 @@ function resolveSupportedChatModel(model: SupportedChatModel): ResolvedModel {
       return resolveOpenCodeModel(model.id);
     case "openai":
       return resolveOpenAIModel(model.id);
+    case "cerebras":
+      return resolveCerebrasModel(model.id);
+
     default:
       return assertUnsupportedProvider(provider);
   }

@@ -18,12 +18,20 @@ if (args.includes("--version") || args.includes("-v")) {
 if (args.includes("--help") || args.includes("-h")) {
   console.log(`NoorCode CLI v${packageJson.version}
 
+An interactive AI coding assistant that runs directly in your terminal.
+
 Usage:
+  noorcode             Start the interactive terminal interface
   noorcode [options]
 
 Options:
-  -v, --version  Show version number
-  -h, --help     Show help message
+  -v, --version      Show version number
+  -h, --help         Show this help message
+
+Getting Started:
+  Simply run \`noorcode\` in your terminal and press Enter to launch the UI.
+  From there, you can start a new coding session, chat with various AI models 
+  (like Claude, GPT-4o, Gemma, and GLM), and get instant coding help!
 `);
   process.exit(0);
 }
