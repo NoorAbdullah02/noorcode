@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useChat as useAiChat } from "@ai-sdk/react";
 import {
   DefaultChatTransport,
@@ -47,16 +47,11 @@ export function useChat(sessionId: string, initialMessages: Message[], autoProce
         const metadata = messages.findLast(
           (m) => m.metadata?.mode && m.metadata?.model,
         )?.metadata;
-        const previousMessage = messages[messages.length - 2];
-        const requestMessages =
-          message.role === "assistant" && previousMessage?.role === "user"
-            ? [previousMessage, message]
-            : [message];
 
         return {
           body: {
             id: sessionId,
-            messages: requestMessages,
+            messages,
             mode: message.metadata?.mode ?? metadata?.mode,
             model: message.metadata?.model ?? metadata?.model,
             autoProceed,
@@ -102,6 +97,15 @@ export function useChat(sessionId: string, initialMessages: Message[], autoProce
   });
 
   const autoProceedStep = chat.messages.findLast((m) => m.role === "assistant")?.metadata?.autoProceedStep ?? 0;
+
+  const lastMessage = chat.messages[chat.messages.length - 1];
+  const isComplete = lastMessage ? lastAssistantMessageIsCompleteWithToolCalls({ messages: chat.messages }) : false;
+
+  useEffect(() => {
+    if (autoProceed && chat.status === "ready" && isComplete) {
+      void chat.sendMessage();
+    }
+  }, [autoProceed, chat.status, isComplete]);
 
   return {
     messages: chat.messages,
