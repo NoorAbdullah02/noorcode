@@ -1,6 +1,6 @@
 {
   "name": "@noorcode/cli",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "module": "src/index.tsx",
   "type": "module",
   "private": false,

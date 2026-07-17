@@ -3,7 +3,7 @@ export type ModelPricing = {
   outputUsdPerMillionTokens: number;
 };
 
-export type SupportedProvider = "anthropic" | "bynara" | "opencode" | "openai" | "cerebras";
+export type SupportedProvider = "anthropic" | "bynara" | "aiand" | "opencode" | "openai" | "cerebras";
 
 type SupportedChatModelDefinition = {
   id: string;
@@ -18,6 +18,14 @@ export const SUPPORTED_CHAT_MODELS = [
     pricing: {
       inputUsdPerMillionTokens: 2,
       outputUsdPerMillionTokens: 6,
+    },
+  },
+  {
+    id: "qwen/qwen3.6-27b",
+    provider: "aiand",
+    pricing: {
+      inputUsdPerMillionTokens: 0,
+      outputUsdPerMillionTokens: 0,
     },
   },
   {

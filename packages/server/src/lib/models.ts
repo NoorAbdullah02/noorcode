@@ -11,6 +11,7 @@ import type { LanguageModel } from "ai";
 
 type AnthropicModelId = Extract<SupportedChatModel, { provider: "anthropic" }>["id"];
 type BynaraModelId = Extract<SupportedChatModel, { provider: "bynara" }>["id"];
+type AiAndModelId = Extract<SupportedChatModel, { provider: "aiand" }>["id"];
 type OpenCodeModelId = Extract<SupportedChatModel, { provider: "opencode" }>["id"];
 type OpenAIModelId = Extract<SupportedChatModel, { provider: "openai" }>["id"];
 type CerebrasModelId = Extract<SupportedChatModel, { provider: "cerebras" }>["id"];
@@ -44,6 +45,11 @@ const ANTHROPIC_PROVIDER_OPTIONS: Partial<Record<AnthropicModelId, ProviderOptio
 const bynara = createOpenAI({
   baseURL: "https://router.bynara.id/v1",
   apiKey: process.env.BYNARA_API_KEY,
+});
+
+const aiand = createOpenAI({
+  baseURL: "https://api.aiand.com/v1",
+  apiKey: process.env.AIAND_API_KEY,
 });
 
 const opencode = createOpenAI({
@@ -82,6 +88,18 @@ function resolveBynaraModel(modelId: BynaraModelId): ResolvedModel {
   return {
     model: bynara.chat(modelId),
     provider: "bynara",
+    modelId,
+  };
+}
+
+function resolveAiAndModel(modelId: AiAndModelId): ResolvedModel {
+  if (!process.env.AIAND_API_KEY) {
+    throw new Error("AIAND_API_KEY environment variable is required to use aiand models");
+  }
+
+  return {
+    model: aiand.chat(modelId),
+    provider: "aiand",
     modelId,
   };
 }
@@ -131,6 +149,8 @@ function resolveSupportedChatModel(model: SupportedChatModel): ResolvedModel {
       return resolveAnthropicModel(model.id);
     case "bynara":
       return resolveBynaraModel(model.id);
+    case "aiand":
+      return resolveAiAndModel(model.id);
     case "opencode":
       return resolveOpenCodeModel(model.id);
     case "openai":
