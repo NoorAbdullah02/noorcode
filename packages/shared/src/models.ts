@@ -13,7 +13,31 @@ type SupportedChatModelDefinition = {
 
 export const SUPPORTED_CHAT_MODELS = [
   {
+    id: "agnes-2.0-flash",
+    provider: "bynara",
+    pricing: {
+      inputUsdPerMillionTokens: 2,
+      outputUsdPerMillionTokens: 6,
+    },
+  },
+  {
     id: "mistral-large",
+    provider: "bynara",
+    pricing: {
+      inputUsdPerMillionTokens: 2,
+      outputUsdPerMillionTokens: 6,
+    },
+  },
+  {
+    id: "mistral-medium-3-5",
+    provider: "bynara",
+    pricing: {
+      inputUsdPerMillionTokens: 2,
+      outputUsdPerMillionTokens: 6,
+    },
+  },
+  {
+    id: "tencent-hy3",
     provider: "bynara",
     pricing: {
       inputUsdPerMillionTokens: 2,
